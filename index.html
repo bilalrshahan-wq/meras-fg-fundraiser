@@ -4,138 +4,52 @@
 <meta charset="UTF-8">
 <title>Meras FG Fundraiser</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <style>
-* {
-  box-sizing: border-box;
-  font-family: Arial, sans-serif;
-}
-
-body {
-  margin: 0;
-  height: 100vh;
-  overflow: hidden;
+* { box-sizing: border-box; font-family: Arial, sans-serif; margin:0; padding:0;}
+body { 
+  height: 100vh; 
+  overflow: hidden; 
+  background: radial-gradient(circle at bottom, #0b132b, #000); 
   color: white;
-  background: radial-gradient(circle at bottom, #0b132b, #000);
 }
-
 /* ===== STAR BACKGROUND ===== */
 body::before {
-  content: "";
+  content:"";
   position: fixed;
-  inset: 0;
+  inset:0;
   background:
-    radial-gradient(1px 1px at 20% 30%, white, transparent),
-    radial-gradient(1px 1px at 80% 70%, white, transparent),
-    radial-gradient(1px 1px at 50% 10%, white, transparent);
-  animation: stars 20s linear infinite;
-  opacity: 0.4;
-  pointer-events: none;
+    radial-gradient(1px 1px at 10% 20%, white, transparent),
+    radial-gradient(1px 1px at 30% 80%, white, transparent),
+    radial-gradient(1px 1px at 70% 50%, white, transparent),
+    radial-gradient(1px 1px at 90% 10%, white, transparent);
+  animation: stars 25s linear infinite;
+  opacity:0.4;
+  pointer-events:none;
 }
+@keyframes stars { from{transform:translateY(0);} to{transform:translateY(1000px);} }
 
-@keyframes stars {
-  from { transform: translateY(0); }
-  to { transform: translateY(1000px); }
-}
+/* ===== LAYOUT ===== */
+.wrapper { display:flex; height:100vh; gap:12px; padding:12px; }
+.shop { width:280px; background: rgba(15,20,40,0.85); border-radius:12px; padding:12px; overflow-y:auto; }
+.shop h2 { text-align:center; margin:6px 0 10px; font-size:18px; }
+.shop::-webkit-scrollbar { width:6px; }
+.shop::-webkit-scrollbar-thumb { background:#555; border-radius:6px; }
+.item { background: rgba(255,255,255,0.06); border-radius:10px; padding:10px; margin-bottom:10px; font-size:13px; }
+.item b { font-size:14px; }
+.item button { width:100%; margin-top:6px; padding:6px; background:#333; color:white; border:none; border-radius:6px; cursor:pointer;}
+.item button:disabled { opacity:0.4; cursor:not-allowed; }
 
-/* ===== MAIN LAYOUT ===== */
-.wrapper {
-  display: flex;
-  height: 100vh;
-  padding: 12px;
-  gap: 12px;
-}
+.center { flex:1; background: rgba(0,0,0,0.35); border-radius:14px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:12px;}
+.center h1 { font-size:28px; margin-bottom:6px;}
+.center button { margin-top:12px; padding:14px 24px; font-size:16px; background:#1f3cff; color:white; border:none; border-radius:10px; cursor:pointer; }
+.stats { margin-top:10px; font-size:14px; opacity:0.85; }
 
-/* ===== SHOPS ===== */
-.shop {
-  width: 260px;
-  background: rgba(15, 20, 40, 0.85);
-  border-radius: 12px;
-  padding: 12px;
-  overflow-y: auto;
-}
-
-.shop h2 {
-  text-align: center;
-  margin: 6px 0 10px;
-  font-size: 18px;
-}
-
-/* Scrollbar */
-.shop::-webkit-scrollbar {
-  width: 6px;
-}
-.shop::-webkit-scrollbar-thumb {
-  background: #555;
-  border-radius: 6px;
-}
-
-/* ===== SHOP ITEMS ===== */
-.item {
-  background: rgba(255,255,255,0.06);
-  border-radius: 10px;
-  padding: 10px;
-  margin-bottom: 10px;
-  font-size: 13px;
-}
-
-.item b {
-  font-size: 14px;
-}
-
-.item button {
-  width: 100%;
-  margin-top: 6px;
-  padding: 6px;
-  background: #333;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.item button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-/* ===== CENTER ===== */
-.center {
-  flex: 1;
-  background: rgba(0,0,0,0.35);
-  border-radius: 14px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-
-.center h1 {
-  font-size: 28px;
-  margin-bottom: 6px;
-}
-
-.center button {
-  margin-top: 12px;
-  padding: 14px 24px;
-  font-size: 16px;
-  background: #1f3cff;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-/* ===== SMALL TEXT ===== */
-.stats {
-  margin-top: 10px;
-  font-size: 14px;
-  opacity: 0.85;
-}
+/* ===== MODAL ===== */
+.modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); justify-content:center; align-items:center; z-index:100; }
+.modal-content { background:#111; padding:20px; border-radius:12px; max-width:600px; width:90%; text-align:center; }
+.modal-content button { margin-top:12px; }
 </style>
 </head>
-
 <body>
 
 <div class="wrapper">
@@ -148,116 +62,171 @@ body::before {
   <!-- CENTER -->
   <div class="center">
     <h1>Meras FG Fundraiser</h1>
-    <div class="stats">Click to get free fg</div>
+    <div class="stats">Click to get free FG</div>
     <div class="stats"><b>FG:</b> <span id="fg">0</span></div>
     <div class="stats">FG/sec: <span id="fgps">0</span></div>
     <div class="stats">Click Multiplier: x<span id="multi">1</span></div>
     <button onclick="clickFG()">CLICK</button>
+    <button onclick="openGames()">Games Menu 🎮</button>
+    <button onclick="openGamble()">Gamble 🎲</button>
+    <button onclick="openLeaderboard()">Leaderboard 🏆</button>
   </div>
 
   <!-- RIGHT SHOP -->
   <div class="shop" id="multiShop">
-    <h2>Why do you want fg (click multiplier)</h2>
+    <h2>Click Multipliers</h2>
   </div>
 
 </div>
 
+<!-- MODAL -->
+<div class="modal" id="modal">
+  <div class="modal-content" id="modalContent">
+    <h2>Modal</h2>
+    <div id="modalBody"></div>
+    <button onclick="closeModal()">Close</button>
+  </div>
+</div>
+
 <script>
+// ===== CORE VARIABLES =====
 let fg = 0;
 let fgps = 0;
 let multiplier = 1;
 
+// ===== SAVE SYSTEM =====
+function save() {
+  localStorage.setItem("fgGame", JSON.stringify({fg, fgps, multiplier}));
+}
+function load() {
+  const data = JSON.parse(localStorage.getItem("fgGame"));
+  if(data){ fg=data.fg; fgps=data.fgps; multiplier=data.multiplier; }
+}
+load();
+
+// ===== UI ELEMENTS =====
 const fgEl = document.getElementById("fg");
 const fgpsEl = document.getElementById("fgps");
 const multiEl = document.getElementById("multi");
 
+// ===== UPDATE UI =====
 function updateUI() {
-  fgEl.textContent = Math.floor(fg);
-  fgpsEl.textContent = fgps;
-  multiEl.textContent = multiplier;
+  fgEl.textContent = formatNumber(fg);
+  fgpsEl.textContent = formatNumber(fgps);
+  multiEl.textContent = formatNumber(multiplier);
+  save();
 }
 
-function clickFG() {
-  fg += multiplier;
-  updateUI();
-}
+// ===== CLICK FUNCTION =====
+function clickFG(){ fg+=multiplier; updateUI(); }
 
-/* ===== AUTO CLICKERS ===== */
+// ===== AUTO CLICKERS =====
 const autos = [
-  ["Mera", 1, 25],
-  ["Tom", 3, 100],
-  ["F5", 8, 300],
-  ["PRX", 18, 750],
-  ["India All Stars", 35, 1500],
-  ["stxcked", 70, 3000],
-  ["Shin", 140, 6000],
-  ["Prime Mera", 500, 25000]
+  ["Mera",1,25], ["Tom",3,100], ["F5",8,300], ["PRX",18,750],
+  ["India All Stars",35,1500], ["stxcked",70,3000], ["Shin",140,6000],
+  ["Prime Mera",500,25000], ["God Tier Mera",5000,250000], ["Legendary Mera",50000,2500000],
+  ["Trillion Mera",1e12,1e11]
 ];
-
 const autoShop = document.getElementById("autoShop");
-
-autos.forEach(a => {
-  const div = document.createElement("div");
-  div.className = "item";
-  div.innerHTML = `
-    <b>${a[0]}</b><br>
-    +${a[1]} fg/sec<br>
-    Cost: ${a[2]}
-    <button>Buy</button>
-  `;
-  const btn = div.querySelector("button");
-  btn.onclick = () => {
-    if (fg >= a[2]) {
-      fg -= a[2];
-      fgps += a[1];
-      updateUI();
-    }
-  };
+autos.forEach(a=>{
+  const div=document.createElement("div");
+  div.className="item";
+  div.innerHTML=`<b>${a[0]}</b><br>+${formatNumber(a[1])} FG/sec<br>Cost: ${formatNumber(a[2])}<button>Buy</button>`;
+  const btn=div.querySelector("button");
+  btn.onclick=()=>{ if(fg>=a[2]){ fg-=a[2]; fgps+=a[1]; updateUI(); } };
   autoShop.appendChild(div);
 });
 
-/* ===== MULTIPLIERS ===== */
+// ===== MULTIPLIERS =====
 const mults = [
-  ["4 inb", 2, 5000],
-  ["3 walls", 3, 12000],
-  ["illegal style", 5, 30000],
-  ["banned move", 8, 70000],
-  ["fg because you feel like it", 12, 150000],
-  ["Cheating", 20, 400000],
-  ["hacks", 35, 900000],
-  ["Prime FG", 100, 5000000]
+  ["4 inb",2,5000], ["3 walls",3,12000], ["illegal style",5,30000], ["banned move",8,70000],
+  ["fg for fun",12,150000], ["Cheating",20,400000], ["hacks",35,900000], ["Prime FG",100,5000000],
+  ["Mega FG",1000,5e7], ["Ultra FG",10000,5e8], ["Trillion Clicks",1e12,5e12]
 ];
-
 const multiShop = document.getElementById("multiShop");
-
-mults.forEach(m => {
-  const div = document.createElement("div");
-  div.className = "item";
-  div.innerHTML = `
-    <b>${m[0]}</b><br>
-    x${m[1]} clicks<br>
-    Cost: ${m[2]}
-    <button>Buy</button>
-  `;
-  const btn = div.querySelector("button");
-  btn.onclick = () => {
-    if (fg >= m[2]) {
-      fg -= m[2];
-      multiplier = m[1];
-      updateUI();
-    }
-  };
+mults.forEach(m=>{
+  const div=document.createElement("div");
+  div.className="item";
+  div.innerHTML=`<b>${m[0]}</b><br>x${formatNumber(m[1])} clicks<br>Cost: ${formatNumber(m[2])}<button>Buy</button>`;
+  const btn=div.querySelector("button");
+  btn.onclick=()=>{ if(fg>=m[2]){ fg-=m[2]; multiplier=m[1]; updateUI(); } };
   multiShop.appendChild(div);
 });
 
-/* ===== AUTO LOOP ===== */
-setInterval(() => {
-  fg += fgps * multiplier;
+// ===== AUTO LOOP =====
+setInterval(()=>{ fg+=fgps*multiplier; updateUI(); },1000);
+
+// ===== NUMBER FORMATTER =====
+function formatNumber(num){
+  if(num>=1e12) return (num/1e12).toFixed(2)+"T";
+  if(num>=1e9) return (num/1e9).toFixed(2)+"B";
+  if(num>=1e6) return (num/1e6).toFixed(2)+"M";
+  if(num>=1e3) return (num/1e3).toFixed(1)+"K";
+  return Math.floor(num);
+}
+
+// ===== MODAL FUNCTIONS =====
+const modal=document.getElementById("modal");
+function openModal(title,body){ modal.style.display="flex"; document.getElementById("modalContent").querySelector("h2").textContent=title; document.getElementById("modalBody").innerHTML=body; }
+function closeModal(){ modal.style.display="none"; }
+
+// ===== LEADERBOARD =====
+function openLeaderboard(){
+  let lb = JSON.parse(localStorage.getItem("fgLeaderboard")) || [];
+  lb.push({name:"You",fg:fg});
+  lb.sort((a,b)=>b.fg-a.fg);
+  if(lb.length>5) lb=lb.slice(0,5);
+  localStorage.setItem("fgLeaderboard", JSON.stringify(lb));
+  let html="<ol>";
+  lb.forEach(e=> html+=`<li>${e.name}: ${formatNumber(e.fg)} FG</li>`);
+  html+="</ol><p>Top 5 reward: 100 Robux!</p>";
+  openModal("Leaderboard 🏆",html);
+}
+
+// ===== GAMES MENU =====
+function openGames(){
+  const games=[
+    {name:"Aim Trainer",func:()=>{ if(confirm("Hit the moving target!")) fg*=2; }},
+    {name:"Coin Flip",func:()=>{ fg*=Math.random()<0.5?2:0; }},
+    {name:"Memory Grid",func:()=>{ if(confirm("Remember pattern?")) fg*=2; }},
+    {name:"Reaction Test",func:()=>{ if(confirm("Click fast enough!")) fg*=2; }},
+    {name:"Number Guess",func:()=>{ if(confirm("Guess number 1-5")) fg*=2; }},
+    {name:"Rapid Click Burst",func:()=>{ if(confirm("Click rapidly!")) fg*=2; }},
+    {name:"Precision Hold",func:()=>{ if(confirm("Hold click for 3s")) fg*=2; }},
+    {name:"Pattern Recall",func:()=>{ if(confirm("Repeat pattern")) fg*=2; }},
+    {name:"Time Stop",func:()=>{ if(confirm("Stop at exact time")) fg*=2; }},
+    {name:"Risk Button",func:()=>{ if(confirm("One click decides")) fg*=2; }}
+  ];
+  let html="<ul>";
+  games.forEach((g,i)=> html+=`<li><button onclick="playGame(${i})">${g.name}</button></li>`);
+  html+="</ul>";
+  openModal("Games Menu 🎮",html);
+}
+function playGame(i){ closeModal(); const games=[
+    {name:"Aim Trainer",func:()=>{ if(confirm("Hit the moving target!")) fg*=2; }},
+    {name:"Coin Flip",func:()=>{ fg*=Math.random()<0.5?2:0; }},
+    {name:"Memory Grid",func:()=>{ if(confirm("Remember pattern?")) fg*=2; }},
+    {name:"Reaction Test",func:()=>{ if(confirm("Click fast enough!")) fg*=2; }},
+    {name:"Number Guess",func:()=>{ if(confirm("Guess number 1-5")) fg*=2; }},
+    {name:"Rapid Click Burst",func:()=>{ if(confirm("Click rapidly!")) fg*=2; }},
+    {name:"Precision Hold",func:()=>{ if(confirm("Hold click for 3s")) fg*=2; }},
+    {name:"Pattern Recall",func:()=>{ if(confirm("Repeat pattern")) fg*=2; }},
+    {name:"Time Stop",func:()=>{ if(confirm("Stop at exact time")) fg*=2; }},
+    {name:"Risk Button",func:()=>{ if(confirm("One click decides")) fg*=2; }}
+][i]; games.func(); updateUI(); }
+
+// ===== GAMBLE =====
+function openGamble(){
+  let amt=prompt("Enter amount of FG to gamble:");
+  amt=parseInt(amt);
+  if(isNaN(amt)||amt<=0){ alert("Invalid amount"); return; }
+  if(amt>fg){ alert("Not enough FG"); return; }
+  if(Math.random()<0.5){ fg+=amt; alert(`You won ${formatNumber(amt)} FG!`); }
+  else{ fg-=amt; alert(`You lost ${formatNumber(amt)} FG!`); }
   updateUI();
-}, 1000);
+}
 
 updateUI();
 </script>
-
 </body>
 </html>
