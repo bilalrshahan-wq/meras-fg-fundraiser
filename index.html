@@ -1,27 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Meras FG Fundraiser</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- ... keep your head as-is ... -->
+
 <style>
-*{box-sizing:border-box;font-family:Arial,sans-serif;margin:0;padding:0;}
-body{height:100vh;overflow:hidden;background:#0b132b;color:white;position:relative;cursor:pointer;}
+/* ===== BODY & WRAPPER ===== */
+body {height:100vh;overflow:hidden;background:#0b132b;color:white;position:relative;cursor:pointer;}
+canvas#stars {position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;}
 
-/* ===== STAR BACKGROUND ===== */
-canvas#stars{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;}
-
-/* ===== LAYOUT ===== */
-.wrapper{display:flex;height:100vh;gap:12px;padding:12px;}
-.shop{width:280px;background: rgba(15,20,40,0.85);border-radius:12px;padding:12px;overflow-y:auto;}
+/* ===== SHOPS ===== */
+.wrapper {display:flex;height:100vh;gap:12px;padding:12px;}
+.shop {width:280px;background: rgba(15,20,40,0.85);border-radius:12px;padding:12px;overflow-y:auto;}
 .shop h2{text-align:center;margin:6px 0 10px;font-size:18px;}
 .shop::-webkit-scrollbar{width:6px;}
 .shop::-webkit-scrollbar-thumb{background:#555;border-radius:6px;}
-.item{background: rgba(255,255,255,0.06);border-radius:10px;padding:10px;margin-bottom:10px;font-size:13px;}
+.item {background: rgba(255,255,255,0.06);border-radius:10px;padding:10px;margin-bottom:10px;font-size:13px;}
 .item b{font-size:14px;}
 .item button{width:100%;margin-top:6px;padding:6px;background:#333;color:white;border:none;border-radius:6px;cursor:pointer;}
 .item button:disabled{opacity:0.4;cursor:not-allowed;}
 
+/* ===== CENTER ===== */
 .center{flex:1;background: rgba(0,0,0,0.35); border-radius:14px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:12px;}
 .center h1{font-size:28px;margin-bottom:6px;}
 .center button{margin-top:12px;padding:14px 24px;font-size:16px;background:#1f3cff;color:white;border:none;border-radius:10px;cursor:pointer;}
@@ -33,11 +28,9 @@ canvas#stars{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;}
 .modal-content button.close{position:absolute;top:10px;right:10px;background:red;color:white;padding:4px 8px;border:none;border-radius:6px;cursor:pointer;}
 .modal-content button{margin-top:12px;}
 </style>
-</head>
+
 <body>
-
 <canvas id="stars"></canvas>
-
 <div class="wrapper">
   <div class="shop" id="autoShop"><h2>Auto Clicker Shop</h2></div>
   <div class="center">
@@ -46,12 +39,12 @@ canvas#stars{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;}
     <div class="stats"><b>FG:</b> <span id="fg">0</span></div>
     <div class="stats">FG/sec: <span id="fgps">0</span></div>
     <div class="stats">Click Multiplier: x<span id="multi">1</span></div>
-    <button onclick="openGames()">Games Menu 🎮</button>
+    <button id="gamesBtn">Games Menu 🎮</button>
     <button onclick="openGamble()">Gamble 🎲</button>
     <button onclick="openLeaderboard()">Leaderboard 🏆</button>
-    <div class="shop" id="potionShop"><h2>Potions Shop</h2></div>
   </div>
   <div class="shop" id="multiShop"><h2>Click Multipliers</h2></div>
+  <div class="shop" id="potionShop"><h2>Potions Shop</h2></div>
 </div>
 
 <!-- MODAL -->
@@ -79,68 +72,55 @@ const fgpsEl=document.getElementById("fgps");
 const multiEl=document.getElementById("multi");
 function updateUI(){fgEl.textContent=formatNumber(fg);fgpsEl.textContent=formatNumber(fgps);multiEl.textContent=formatNumber(multiplier);save();}
 
-// ===== CLICK ANYWHERE =====
+// ===== CLICK =====
 document.body.addEventListener('click',e=>{ if(e.target.tagName!=="BUTTON") clickFG(); });
 function clickFG(){fg+=multiplier;updateUI();}
 
-// ===== AUTO CLICKERS =====
-const autos=[
-  ["Mera",1,25], ["Tom",3,100], ["F5",8,300], ["PRX",18,750],
-  ["India All Stars",35,1500], ["stxcked",70,3000], ["Shin",140,6000],
-  ["Prime Mera",500,25000], ["God Tier Mera",5000,250000], ["Legendary Mera",50000,2500000],
-  ["Trillion Mera",1e12,1e11]
-];
+// ===== SHOPS =====
+const autos=[["Mera",1,25],["Tom",3,100],["F5",8,300],["PRX",18,750]];
 const autoShop=document.getElementById("autoShop");
 autos.forEach(a=>{
-  const div=document.createElement("div");div.className="item";
+  const div=document.createElement("div"); div.className="item";
   div.innerHTML=`<b>${a[0]}</b><br>+${formatNumber(a[1])} FG/sec<br>Cost: ${formatNumber(a[2])}<button>Buy</button>`;
-  const btn=div.querySelector("button"); btn.onclick=()=>{if(fg>=a[2]){fg-=a[2];fgps+=a[1];updateUI();}};
+  div.querySelector("button").addEventListener('click',()=>{if(fg>=a[2]){fg-=a[2];fgps+=a[1];updateUI();}});
   autoShop.appendChild(div);
 });
 
-// ===== MULTIPLIERS =====
-const mults=[
-  ["4 inb",2,5000], ["3 walls",3,12000], ["illegal style",5,30000], ["banned move",8,70000],
-  ["fg for fun",12,150000], ["Cheating",20,400000], ["hacks",35,900000], ["Prime FG",100,5000000],
-  ["Mega FG",1000,5e7], ["Ultra FG",10000,5e8], ["Trillion Clicks",1e12,5e12]
-];
+const mults=[["4 inb",2,5000],["3 walls",3,12000]];
 const multiShop=document.getElementById("multiShop");
 mults.forEach(m=>{
   const div=document.createElement("div"); div.className="item";
   div.innerHTML=`<b>${m[0]}</b><br>x${formatNumber(m[1])} clicks<br>Cost: ${formatNumber(m[2])}<button>Buy</button>`;
-  const btn=div.querySelector("button"); btn.onclick=()=>{if(fg>=m[2]){fg-=m[2];multiplier=m[1];updateUI();}};
+  div.querySelector("button").addEventListener('click',()=>{if(fg>=m[2]){fg-=m[2];multiplier=m[1];updateUI();}});
   multiShop.appendChild(div);
 });
 
-// ===== POTIONS =====
-const potions=[
-  ["×10 Multiplier (30s)",10,500000,30000],
-  ["×5 Multiplier (1min)",5,250000,60000]
-];
+// ===== POTIONS SHOP =====
+const potions=[["×10 Multiplier (30s)",10,500000,30000],["×5 Multiplier (1min)",5,250000,60000]];
 const potionShop=document.getElementById("potionShop");
 potions.forEach(p=>{
   const div=document.createElement("div"); div.className="item";
   div.innerHTML=`<b>${p[0]}</b><br>Cost: ${formatNumber(p[2])}<button>Buy</button>`;
-  const btn=div.querySelector("button"); btn.onclick=()=>{
+  div.querySelector("button").addEventListener('click',()=>{
     if(fg>=p[2]){
-      fg-=p[2];activePotion={mult:p[1],end:Date.now()+p[3]}; multiplier*=p[1]; updateUI();
+      fg-=p[2]; activePotion={mult:p[1],end:Date.now()+p[3]}; multiplier*=p[1]; updateUI();
       setTimeout(()=>{multiplier/=p[1]; activePotion=null; updateUI();},p[3]);
     }
-  };
+  });
   potionShop.appendChild(div);
 });
 
 // ===== AUTO LOOP =====
 setInterval(()=>{
   fg+=fgps*multiplier;
-  if(activePotion&&Date.now()>activePotion.end){multiplier/=activePotion.mult;activePotion=null;}
+  if(activePotion&&Date.now()>activePotion.end){multiplier/=activePotion.mult; activePotion=null;}
   updateUI();
 },1000);
 
-// ===== NUMBER FORMATTER =====
+// ===== FORMAT NUMBERS =====
 function formatNumber(num){if(num>=1e12)return (num/1e12).toFixed(2)+"T";if(num>=1e9)return (num/1e9).toFixed(2)+"B";if(num>=1e6)return (num/1e6).toFixed(2)+"M";if(num>=1e3)return (num/1e3).toFixed(1)+"K";return Math.floor(num);}
 
-// ===== MODAL FUNCTIONS =====
+// ===== MODAL =====
 const modal=document.getElementById("modal");
 function openModal(title,body){modal.style.display="flex";document.getElementById("modalTitle").textContent=title;document.getElementById("modalBody").innerHTML=body;}
 function closeModal(){modal.style.display="none";}
@@ -158,46 +138,57 @@ function openLeaderboard(){
   openModal("Leaderboard 🏆",html);
 }
 
-// ===== GAMES MENU =====
-const games=[
-{name:"Coin Flip",func:coinFlip},
-{name:"Dice Roll",func:diceRoll},
-{name:"Aim Trainer",func:aimTrainer},
-{name:"Reaction Test",func:reactionTest},
-{name:"Number Guess",func:numberGuess}
-];
+// ===== GAMES BUTTON FIX =====
+const gamesBtn=document.getElementById("gamesBtn");
+gamesBtn.addEventListener('click',openGames);
+const games=[{name:"Coin Flip",func:coinFlip},{name:"Dice Roll",func:diceRoll}];
 function openGames(){
-  let html="<ul>";
-  games.forEach((g,i)=> html+=`<li><button onclick="playGame(${i})">${g.name}</button></li>`);
-  html+="</ul>";
-  openModal("Games Menu 🎮",html);
-}
-function playGame(i){closeModal();games[i].func();updateUI();}
-
-// ===== MINI-GAME FUNCTIONS =====
-function coinFlip(){openModal("Coin Flip","<button onclick='resolveCoinFlip(true)'>Heads</button> <button onclick='resolveCoinFlip(false)'>Tails</button>");}
-function resolveCoinFlip(heads){closeModal(); fg+=Math.random()<0.5?fg:0; alert("Result in-page next update!");}
-
-// Placeholder: we'll add proper aim/reaction/number guess games windowed in-page next iteration
-
-// ===== GAMBLE =====
-function openGamble(){
-  let amt=prompt("Enter amount of FG to gamble:"); amt=parseInt(amt);
-  if(isNaN(amt)||amt<=0){alert("Invalid");return;}
-  if(amt>fg){alert("Not enough FG");return;}
-  if(Math.random()<0.5){fg+=amt;alert(`You won ${formatNumber(amt)} FG!`);}
-  else{fg-=amt;alert(`You lost ${formatNumber(amt)} FG!`);}
-  updateUI();
+  const ul=document.createElement("ul");
+  games.forEach((g,i)=>{
+    const li=document.createElement("li");
+    const btn=document.createElement("button");
+    btn.textContent=g.name;
+    btn.addEventListener('click',()=>{closeModal(); g.func();});
+    li.appendChild(btn); ul.appendChild(li);
+  });
+  const div=document.createElement("div"); div.appendChild(ul);
+  openModal("Games Menu 🎮",div.innerHTML);
 }
 
-// ===== STARFIELD =====
-const canvas=document.getElementById("stars");const ctx=canvas.getContext("2d");canvas.width=window.innerWidth;canvas.height=window.innerHeight;
-const stars=[];for(let i=0;i<200;i++){stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1.5+0.5,speed:Math.random()*0.3+0.1});}
-function drawStars(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillStyle="white";stars.forEach(s=>{ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();s.y+=s.speed;if(s.y>canvas.height)s.y=0;});requestAnimationFrame(drawStars);}
+// ===== MINI GAME PLACEHOLDER =====
+function coinFlip(){openModal("Coin Flip","<p>Heads or Tails!</p>");}
+function diceRoll(){openModal("Dice Roll","<p>Roll the dice!</p>");}
+
+// ===== STARFIELD GALAXY BACKGROUND =====
+const canvas=document.getElementById("stars");
+const ctx=canvas.getContext("2d");
+canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+
+const stars=[];
+for(let i=0;i<300;i++){
+  stars.push({
+    x:Math.random()*canvas.width,
+    y:Math.random()*canvas.height,
+    r:Math.random()*1.5+0.5,
+    speed:Math.random()*0.3+0.1,
+    color:`hsl(${Math.random()*360},70%,80%)`
+  });
+}
+function drawStars(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  const gradient=ctx.createRadialGradient(canvas.width/2,canvas.height/2,0,canvas.width/2,canvas.height/2,canvas.width/1.2);
+  gradient.addColorStop(0,"#0b132b");
+  gradient.addColorStop(1,"#090a1a");
+  ctx.fillStyle=gradient; ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  stars.forEach(s=>{
+    ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fillStyle=s.color; ctx.fill();
+    s.y+=s.speed; if(s.y>canvas.height) s.y=0;
+  });
+  requestAnimationFrame(drawStars);
+}
 drawStars();
 
 updateUI();
 </script>
-
 </body>
-</html>
