@@ -46,6 +46,7 @@ button.game-btn{margin:5px;padding:8px 12px;background:#1f3cff;border:none;borde
     <h1>Meras FG Fundraiser</h1>
     <div class="stats">Click to get free FG</div>
     <div class="stats"><b>FG:</b> <span id="fg">0</span></div>
+    <div class="stats">FG/sec: <span id="fgps">0</span></div>
     <div class="stats">Click Multiplier: x<span id="multi">1</span></div>
     <button id="clickBtn">CLICK</button>
     <button onclick="openGames()">Games Menu 🎮</button>
@@ -67,30 +68,41 @@ button.game-btn{margin:5px;padding:8px 12px;background:#1f3cff;border:none;borde
 
 <script>
 // ===== CORE VARIABLES =====
-let fg=0, multiplier=1, username=null;
-const fgEl=document.getElementById("fg"), multiEl=document.getElementById("multi");
+let fg=0, fgps=0, multiplier=1, username=null;
+const fgEl=document.getElementById("fg"), fgpsEl=document.getElementById("fgps"), multiEl=document.getElementById("multi");
 const modal=document.getElementById("modal");
 
 // ===== SAVE/LOAD =====
-function save(){ localStorage.setItem("fgGame",JSON.stringify({fg,multiplier,username})); }
-function load(){ const data=JSON.parse(localStorage.getItem("fgGame")); if(data){ fg=data.fg; multiplier=data.multiplier; username=data.username; } }
+function save(){ localStorage.setItem("fgGame",JSON.stringify({fg,fgps,multiplier,username})); }
+function load(){ const data=JSON.parse(localStorage.getItem("fgGame")); if(data){ fg=data.fg; fgps=data.fgps; multiplier=data.multiplier; username=data.username; } }
 load();
 if(!username){ username=prompt("Enter your username:","Player"); save(); }
 
 // ===== UI =====
-function updateUI(){ fgEl.textContent=fg; multiEl.textContent=multiplier; save(); }
+function updateUI(){ fgEl.textContent=fg; fgpsEl.textContent=fgps; multiEl.textContent=multiplier; save(); }
 document.getElementById("clickBtn").onclick = ()=>{ fg+=multiplier; updateUI(); };
 
-// ===== SHOPS =====
-const autos=[["Mera",1,25],["Tom",3,100],["F5",8,300],["PRX",18,750],["India All Stars",35,1500],["stxcked",70,3000],["Shin",140,6000],["Prime Mera",500,25000],["God Tier Mera",5000,250000],["Legendary Mera",50000,2500000],["Trillion Mera",1e12,1e11]];
+// ===== AUTO CLICKERS =====
+const autos=[
+  ["Mera",1,25],["Tom",3,100],["F5",8,300],["PRX",18,750],
+  ["India All Stars",35,1500],["stxcked",70,3000],["Shin",140,6000],
+  ["Prime Mera",500,25000],["God Tier Mera",5000,250000],["Legendary Mera",50000,2500000],
+  ["Ultra Mera",150000,1e7],["Mega Mera",500000,5e7],["Titan Mera",1e6,1e8],["Giga Mera",1e7,5e8],["Trillion Mera",1e12,1e11]
+];
 const autoShop=document.getElementById("autoShop");
 autos.forEach(a=>{
   const div=document.createElement("div"); div.className="item";
-  div.innerHTML=`<b>${a[0]}</b><br>Cost: ${a[2]}<button>Buy</button>`;
-  div.querySelector("button").onclick=()=>{ if(fg>=a[2]){ fg-=a[2]; updateUI(); alert("Bought "+a[0]); } };
+  div.innerHTML=`<b>${a[0]}</b><br>+${a[1]} FG/sec<br>Cost: ${a[2]}<button>Buy</button>`;
+  div.querySelector("button").onclick=()=>{ if(fg>=a[2]){ fg-=a[2]; fgps+=a[1]; updateUI(); } };
   autoShop.appendChild(div);
 });
-const mults=[["4 inb",2,5000],["3 walls",3,12000],["illegal style",5,30000],["banned move",8,70000],["fg for fun",12,150000]];
+
+// ===== MULTIPLIERS =====
+const mults=[
+  ["4 inb",2,5000],["3 walls",3,12000],["illegal style",5,30000],["banned move",8,70000],
+  ["fg for fun",12,150000],["Cheating",20,400000],["hacks",35,900000],
+  ["Prime FG",100,5000000],["Mega FG",1000,5e7],["Ultra FG",10000,5e8],["Trillion Clicks",1e12,5e12]
+];
 const multiShop=document.getElementById("multiShop");
 mults.forEach(m=>{
   const div=document.createElement("div"); div.className="item";
@@ -99,41 +111,24 @@ mults.forEach(m=>{
   multiShop.appendChild(div);
 });
 
+// ===== AUTO LOOP =====
+setInterval(()=>{ fg += fgps * multiplier; updateUI(); },1000);
+
 // ===== MODAL =====
 function openModal(title,body){ modal.style.display="flex"; modal.style.pointerEvents="auto"; document.getElementById("modalTitle").textContent=title; document.getElementById("modalBody").innerHTML=body; }
 function closeModal(){ modal.style.display="none"; modal.style.pointerEvents="none"; }
 
-// ===== GAMES MENU =====
-function openGames(){
-  const gameCost = 10000;
-  const html=`<p>Each game costs ${gameCost} FG to play!</p>
-  <button class="game-btn" onclick="coinFlipGame()">Coin Flip</button>
-  <button class="game-btn" onclick="aimTrainerGame()">Aim Trainer</button>
-  <button class="game-btn" onclick="reactionGame()">Reaction Test</button>
-  <button class="game-btn" onclick="numberGuessGame()">Number Guess</button>
-  <button class="game-btn" onclick="memoryGridGame()">Memory Grid</button>
-  <button class="game-btn" onclick="rapidClickGame()">Rapid Click Burst</button>
-  <button class="game-btn" onclick="precisionHoldGame()">Precision Hold</button>
-  <button class="game-btn" onclick="patternRecallGame()">Pattern Recall</button>
-  <button class="game-btn" onclick="timeStopGame()">Time Stop</button>
-  <button class="game-btn" onclick="flappyBirdGame()">Flappy Bird</button>`;
-  openModal("Games Menu 🎮",html);
-}
+// ===== POTION SHOP =====
+function openPotionShop(){ let html=`<p>Buy potions to boost FG temporarily!</p>
+<button onclick="buyPotion('x2 Click Multiplier',20000,60)">x2 Click Multiplier (60s) - 20k FG</button>
+<button onclick="buyPotion('x3 Click Multiplier',50000,60)">x3 Click Multiplier (60s) - 50k FG</button>`;
+openModal("Potion Shop 🧪",html); }
 
-// ===== GAMBLING MENU =====
-function openGamble(){
-  const gambleCost = 5000;
-  const html=`<p>Each gamble costs ${gambleCost} FG!</p>
-  <button class="game-btn" onclick="coinFlipGamble()">Coin Flip</button>
-  <button class="game-btn" onclick="diceRollGamble()">Dice Roll</button>
-  <button class="game-btn" onclick="cardDrawGamble()">Card Draw</button>
-  <button class="game-btn" onclick="rouletteGamble()">Roulette</button>`;
-  openModal("Gamble 🎲",html);
-}
+let activePotion=null, potionTimer=null;
+function buyPotion(name,cost,duration){ if(fg<cost){ alert("Not enough FG!"); return; } fg-=cost; updateUI(); if(activePotion) clearTimeout(potionTimer); let oldMultiplier=multiplier; multiplier*=name.includes('2')?2:3; updateUI(); potionTimer=setTimeout(()=>{ multiplier=oldMultiplier; updateUI(); alert(`${name} expired!`); activePotion=null; },duration*1000); activePotion=name; alert(`${name} activated!`); activePotion=name; }
 
-// ===== REST OF INTERACTIVE GAME FUNCTIONS =====
-// I will write the **full visual interactive game logic** in next step (Aim Trainer, Flappy Bird, Memory, etc.)  
-// For now everything else is ready with buttons and costs/rewards properly set.
+// ===== LEADERBOARD PLACEHOLDER =====
+function openLeaderboard(){ alert("Leaderboard coming soon"); }
 
 updateUI();
 </script>
