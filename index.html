@@ -1,50 +1,87 @@
-<!-- ... keep your head as-is ... -->
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Meras FG Fundraiser</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-/* ===== BODY & WRAPPER ===== */
-body {height:100vh;overflow:hidden;background:#0b132b;color:white;position:relative;cursor:pointer;}
-canvas#stars {position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;}
+* { box-sizing: border-box; font-family: Arial, sans-serif; margin:0; padding:0;}
+body { 
+  height: 100vh; 
+  overflow: hidden; 
+  background: radial-gradient(circle at bottom, #0b132b, #000); 
+  color: white;
+}
+/* ===== STAR BACKGROUND ===== */
+body::before {
+  content:"";
+  position: fixed;
+  inset:0;
+  background:
+    radial-gradient(1px 1px at 10% 20%, white, transparent),
+    radial-gradient(1px 1px at 30% 80%, white, transparent),
+    radial-gradient(1px 1px at 70% 50%, white, transparent),
+    radial-gradient(1px 1px at 90% 10%, white, transparent);
+  animation: stars 25s linear infinite;
+  opacity:0.4;
+  pointer-events:none;
+}
+@keyframes stars { from{transform:translateY(0);} to{transform:translateY(1000px);} }
 
-/* ===== SHOPS ===== */
-.wrapper {display:flex;height:100vh;gap:12px;padding:12px;}
-.shop {width:280px;background: rgba(15,20,40,0.85);border-radius:12px;padding:12px;overflow-y:auto;}
-.shop h2{text-align:center;margin:6px 0 10px;font-size:18px;}
-.shop::-webkit-scrollbar{width:6px;}
-.shop::-webkit-scrollbar-thumb{background:#555;border-radius:6px;}
-.item {background: rgba(255,255,255,0.06);border-radius:10px;padding:10px;margin-bottom:10px;font-size:13px;}
-.item b{font-size:14px;}
-.item button{width:100%;margin-top:6px;padding:6px;background:#333;color:white;border:none;border-radius:6px;cursor:pointer;}
-.item button:disabled{opacity:0.4;cursor:not-allowed;}
+/* ===== LAYOUT ===== */
+.wrapper { display:flex; height:100vh; gap:12px; padding:12px; }
+.shop { width:280px; background: rgba(15,20,40,0.85); border-radius:12px; padding:12px; overflow-y:auto; }
+.shop h2 { text-align:center; margin:6px 0 10px; font-size:18px; }
+.shop::-webkit-scrollbar { width:6px; }
+.shop::-webkit-scrollbar-thumb { background:#555; border-radius:6px; }
+.item { background: rgba(255,255,255,0.06); border-radius:10px; padding:10px; margin-bottom:10px; font-size:13px; }
+.item b { font-size:14px; }
+.item button { width:100%; margin-top:6px; padding:6px; background:#333; color:white; border:none; border-radius:6px; cursor:pointer;}
+.item button:disabled { opacity:0.4; cursor:not-allowed; }
 
-/* ===== CENTER ===== */
-.center{flex:1;background: rgba(0,0,0,0.35); border-radius:14px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:12px;}
-.center h1{font-size:28px;margin-bottom:6px;}
-.center button{margin-top:12px;padding:14px 24px;font-size:16px;background:#1f3cff;color:white;border:none;border-radius:10px;cursor:pointer;}
-.stats{margin-top:10px;font-size:14px;opacity:0.85;}
+.center { flex:1; background: rgba(0,0,0,0.35); border-radius:14px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:12px;}
+.center h1 { font-size:28px; margin-bottom:6px;}
+.center button { margin-top:12px; padding:14px 24px; font-size:16px; background:#1f3cff; color:white; border:none; border-radius:10px; cursor:pointer; }
+.stats { margin-top:10px; font-size:14px; opacity:0.85; }
 
 /* ===== MODAL ===== */
-.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);justify-content:center;align-items:center;z-index:100;}
-.modal-content{background:#111;padding:20px;border-radius:12px;max-width:600px;width:90%;text-align:center;position:relative;}
-.modal-content button.close{position:absolute;top:10px;right:10px;background:red;color:white;padding:4px 8px;border:none;border-radius:6px;cursor:pointer;}
-.modal-content button{margin-top:12px;}
-</style>
+.modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); justify-content:center; align-items:center; z-index:100; }
+.modal-content { background:#111; padding:20px; border-radius:12px; max-width:600px; width:90%; text-align:center; position:relative; }
+.modal-content button.close { position:absolute; top:8px; right:8px; background:red; color:white; border:none; border-radius:6px; cursor:pointer; padding:4px 8px; }
+.modal-content button.game-btn { margin-top:12px; padding:6px 12px; cursor:pointer; }
 
+/* ===== GAME STYLES ===== */
+#gameCanvas { background:#222; border-radius:10px; margin-top:10px; }
+#memoryGrid button { margin:2px; width:40px; height:40px; }
+</style>
+</head>
 <body>
-<canvas id="stars"></canvas>
+
 <div class="wrapper">
-  <div class="shop" id="autoShop"><h2>Auto Clicker Shop</h2></div>
+
+  <!-- LEFT SHOP -->
+  <div class="shop" id="autoShop">
+    <h2>Auto Clicker Shop</h2>
+  </div>
+
+  <!-- CENTER -->
   <div class="center">
     <h1>Meras FG Fundraiser</h1>
-    <div class="stats">Click anywhere to get free FG</div>
+    <div class="stats">Click to get free FG</div>
     <div class="stats"><b>FG:</b> <span id="fg">0</span></div>
     <div class="stats">FG/sec: <span id="fgps">0</span></div>
     <div class="stats">Click Multiplier: x<span id="multi">1</span></div>
-    <button id="gamesBtn">Games Menu 🎮</button>
+    <button onclick="clickFG()">CLICK</button>
+    <button onclick="openGames()">Games Menu 🎮</button>
     <button onclick="openGamble()">Gamble 🎲</button>
     <button onclick="openLeaderboard()">Leaderboard 🏆</button>
   </div>
-  <div class="shop" id="multiShop"><h2>Click Multipliers</h2></div>
-  <div class="shop" id="potionShop"><h2>Potions Shop</h2></div>
+
+  <!-- RIGHT SHOP -->
+  <div class="shop" id="multiShop">
+    <h2>Click Multipliers</h2>
+  </div>
+
 </div>
 
 <!-- MODAL -->
@@ -58,137 +95,253 @@ canvas#stars {position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;}
 
 <script>
 // ===== CORE VARIABLES =====
-let fg=0, fgps=0, multiplier=1;
-let activePotion=null;
+let fg = 0;
+let fgps = 0;
+let multiplier = 1;
 
 // ===== SAVE SYSTEM =====
-function save(){localStorage.setItem("fgGame",JSON.stringify({fg,fgps,multiplier,activePotion}));}
-function load(){const data=JSON.parse(localStorage.getItem("fgGame"));if(data){fg=data.fg;fgps=data.fgps;multiplier=data.multiplier;activePotion=data.activePotion;}}
+function save() {
+  localStorage.setItem("fgGame", JSON.stringify({fg, fgps, multiplier}));
+}
+function load() {
+  const data = JSON.parse(localStorage.getItem("fgGame"));
+  if(data){ fg=data.fg; fgps=data.fgps; multiplier=data.multiplier; }
+}
 load();
 
 // ===== UI ELEMENTS =====
-const fgEl=document.getElementById("fg");
-const fgpsEl=document.getElementById("fgps");
-const multiEl=document.getElementById("multi");
-function updateUI(){fgEl.textContent=formatNumber(fg);fgpsEl.textContent=formatNumber(fgps);multiEl.textContent=formatNumber(multiplier);save();}
+const fgEl = document.getElementById("fg");
+const fgpsEl = document.getElementById("fgps");
+const multiEl = document.getElementById("multi");
 
-// ===== CLICK =====
-document.body.addEventListener('click',e=>{ if(e.target.tagName!=="BUTTON") clickFG(); });
-function clickFG(){fg+=multiplier;updateUI();}
+// ===== UPDATE UI =====
+function updateUI() {
+  fgEl.textContent = formatNumber(fg);
+  fgpsEl.textContent = formatNumber(fgps);
+  multiEl.textContent = formatNumber(multiplier);
+  save();
+}
 
-// ===== SHOPS =====
-const autos=[["Mera",1,25],["Tom",3,100],["F5",8,300],["PRX",18,750]];
-const autoShop=document.getElementById("autoShop");
+// ===== CLICK FUNCTION =====
+function clickFG(){ fg+=multiplier; updateUI(); }
+
+// ===== AUTO CLICKERS =====
+const autos = [
+  ["Mera",1,25], ["Tom",3,100], ["F5",8,300], ["PRX",18,750],
+  ["India All Stars",35,1500], ["stxcked",70,3000], ["Shin",140,6000],
+  ["Prime Mera",500,25000], ["God Tier Mera",5000,250000], ["Legendary Mera",50000,2500000],
+  ["Trillion Mera",1e12,1e11]
+];
+const autoShop = document.getElementById("autoShop");
 autos.forEach(a=>{
-  const div=document.createElement("div"); div.className="item";
+  const div=document.createElement("div");
+  div.className="item";
   div.innerHTML=`<b>${a[0]}</b><br>+${formatNumber(a[1])} FG/sec<br>Cost: ${formatNumber(a[2])}<button>Buy</button>`;
-  div.querySelector("button").addEventListener('click',()=>{if(fg>=a[2]){fg-=a[2];fgps+=a[1];updateUI();}});
+  const btn=div.querySelector("button");
+  btn.onclick=()=>{ if(fg>=a[2]){ fg-=a[2]; fgps+=a[1]; updateUI(); } };
   autoShop.appendChild(div);
 });
 
-const mults=[["4 inb",2,5000],["3 walls",3,12000]];
-const multiShop=document.getElementById("multiShop");
+// ===== MULTIPLIERS =====
+const mults = [
+  ["4 inb",2,5000], ["3 walls",3,12000], ["illegal style",5,30000], ["banned move",8,70000],
+  ["fg for fun",12,150000], ["Cheating",20,400000], ["hacks",35,900000], ["Prime FG",100,5000000],
+  ["Mega FG",1000,5e7], ["Ultra FG",10000,5e8], ["Trillion Clicks",1e12,5e12]
+];
+const multiShop = document.getElementById("multiShop");
 mults.forEach(m=>{
-  const div=document.createElement("div"); div.className="item";
+  const div=document.createElement("div");
+  div.className="item";
   div.innerHTML=`<b>${m[0]}</b><br>x${formatNumber(m[1])} clicks<br>Cost: ${formatNumber(m[2])}<button>Buy</button>`;
-  div.querySelector("button").addEventListener('click',()=>{if(fg>=m[2]){fg-=m[2];multiplier=m[1];updateUI();}});
+  const btn=div.querySelector("button");
+  btn.onclick=()=>{ if(fg>=m[2]){ fg-=m[2]; multiplier=m[1]; updateUI(); } };
   multiShop.appendChild(div);
 });
 
-// ===== POTIONS SHOP =====
-const potions=[["×10 Multiplier (30s)",10,500000,30000],["×5 Multiplier (1min)",5,250000,60000]];
-const potionShop=document.getElementById("potionShop");
-potions.forEach(p=>{
-  const div=document.createElement("div"); div.className="item";
-  div.innerHTML=`<b>${p[0]}</b><br>Cost: ${formatNumber(p[2])}<button>Buy</button>`;
-  div.querySelector("button").addEventListener('click',()=>{
-    if(fg>=p[2]){
-      fg-=p[2]; activePotion={mult:p[1],end:Date.now()+p[3]}; multiplier*=p[1]; updateUI();
-      setTimeout(()=>{multiplier/=p[1]; activePotion=null; updateUI();},p[3]);
-    }
-  });
-  potionShop.appendChild(div);
-});
-
 // ===== AUTO LOOP =====
-setInterval(()=>{
-  fg+=fgps*multiplier;
-  if(activePotion&&Date.now()>activePotion.end){multiplier/=activePotion.mult; activePotion=null;}
-  updateUI();
-},1000);
+setInterval(()=>{ fg+=fgps*multiplier; updateUI(); },1000);
 
-// ===== FORMAT NUMBERS =====
-function formatNumber(num){if(num>=1e12)return (num/1e12).toFixed(2)+"T";if(num>=1e9)return (num/1e9).toFixed(2)+"B";if(num>=1e6)return (num/1e6).toFixed(2)+"M";if(num>=1e3)return (num/1e3).toFixed(1)+"K";return Math.floor(num);}
+// ===== NUMBER FORMATTER =====
+function formatNumber(num){
+  if(num>=1e12) return (num/1e12).toFixed(2)+"T";
+  if(num>=1e9) return (num/1e9).toFixed(2)+"B";
+  if(num>=1e6) return (num/1e6).toFixed(2)+"M";
+  if(num>=1e3) return (num/1e3).toFixed(1)+"K";
+  return Math.floor(num);
+}
 
-// ===== MODAL =====
+// ===== MODAL FUNCTIONS =====
 const modal=document.getElementById("modal");
-function openModal(title,body){modal.style.display="flex";document.getElementById("modalTitle").textContent=title;document.getElementById("modalBody").innerHTML=body;}
-function closeModal(){modal.style.display="none";}
+function openModal(title,body){
+  modal.style.display="flex";
+  document.getElementById("modalTitle").textContent=title;
+  document.getElementById("modalBody").innerHTML=body;
+}
+function closeModal(){ modal.style.display="none"; }
 
 // ===== LEADERBOARD =====
 function openLeaderboard(){
-  let lb=JSON.parse(localStorage.getItem("fgLeaderboard"))||[];
+  let lb = JSON.parse(localStorage.getItem("fgLeaderboard")) || [];
   lb.push({name:"You",fg:fg});
   lb.sort((a,b)=>b.fg-a.fg);
   if(lb.length>5) lb=lb.slice(0,5);
-  localStorage.setItem("fgLeaderboard",JSON.stringify(lb));
+  localStorage.setItem("fgLeaderboard", JSON.stringify(lb));
   let html="<ol>";
   lb.forEach(e=> html+=`<li>${e.name}: ${formatNumber(e.fg)} FG</li>`);
   html+="</ol><p>Top 5 reward: 100 Robux!</p>";
   openModal("Leaderboard 🏆",html);
 }
 
-// ===== GAMES BUTTON FIX =====
-const gamesBtn=document.getElementById("gamesBtn");
-gamesBtn.addEventListener('click',openGames);
-const games=[{name:"Coin Flip",func:coinFlip},{name:"Dice Roll",func:diceRoll}];
+// ===== GAMES MENU =====
+const gamesList = [
+  "Coin Flip",
+  "Aim Trainer",
+  "Reaction Test",
+  "Number Guess",
+  "Memory Grid",
+  "Rapid Click Burst",
+  "Precision Hold",
+  "Risk Button",
+  "Time Stop",
+  "Pattern Recall"
+];
+
 function openGames(){
-  const ul=document.createElement("ul");
-  games.forEach((g,i)=>{
-    const li=document.createElement("li");
+  let html="<ul>";
+  gamesList.forEach((g,i)=> html+=`<li><button class="game-btn" onclick="startGame(${i})">${g}</button></li>`);
+  html+="</ul>";
+  openModal("Games Menu 🎮",html);
+}
+
+// ===== GAME LOGIC =====
+function startGame(i){
+  switch(i){
+    case 0: coinFlipGame(); break;
+    case 1: aimTrainerGame(); break;
+    case 2: reactionTestGame(); break;
+    case 3: numberGuessGame(); break;
+    case 4: memoryGridGame(); break;
+    case 5: rapidClickBurstGame(); break;
+    case 6: precisionHoldGame(); break;
+    case 7: riskButtonGame(); break;
+    case 8: timeStopGame(); break;
+    case 9: patternRecallGame(); break;
+  }
+}
+
+// ===== SIMPLE FUNCTIONAL GAMES =====
+function coinFlipGame(){
+  let html=`<p>Click to flip a coin:</p><button class="game-btn" id="flipBtn">Flip</button><div id="coinResult"></div>`;
+  openModal("Coin Flip",html);
+  document.getElementById("flipBtn").onclick=()=>{
+    const win = Math.random()<0.5;
+    if(win){ fg*=2; document.getElementById("coinResult").textContent="You won! FG doubled!"; }
+    else{ fg=Math.floor(fg/2); document.getElementById("coinResult").textContent="You lost! FG halved!"; }
+    updateUI();
+  };
+}
+
+function aimTrainerGame(){
+  const html=`<p>Click the moving red square as fast as you can!</p><canvas id="gameCanvas" width="400" height="200"></canvas>`;
+  openModal("Aim Trainer",html);
+  const canvas = document.getElementById("gameCanvas");
+  const ctx = canvas.getContext("2d");
+  let x=0, y=50;
+  let speed=3;
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle="red";
+    ctx.fillRect(x,y,50,50);
+    x+=speed;
+    if(x+50>canvas.width || x<0) speed*=-1;
+    requestAnimationFrame(draw);
+  }
+  draw();
+  canvas.onclick=()=>{
+    fg*=2;
+    updateUI();
+    alert("Hit! FG doubled!");
+    closeModal();
+  };
+}
+
+function reactionTestGame(){
+  let html=`<p>Wait for the box to turn green, then click it!</p><div id="reactionBox" style="width:100px;height:100px;background:red;margin:20px auto;cursor:pointer;"></div>`;
+  openModal("Reaction Test",html);
+  const box = document.getElementById("reactionBox");
+  setTimeout(()=>{ box.style.background="green"; box.onclick=()=>{ fg*=2; updateUI(); alert("Success! FG doubled!"); closeModal(); }; },1000+Math.random()*3000);
+}
+
+function numberGuessGame(){
+  let num=Math.floor(Math.random()*5)+1;
+  let html=`<p>Guess a number from 1 to 5:</p>`;
+  for(let i=1;i<=5;i++){
+    html+=`<button class="game-btn" onclick="numberGuessClick(${i},${num})">${i}</button>`;
+  }
+  openModal("Number Guess",html);
+}
+function numberGuessClick(guess,num){
+  if(guess===num){ fg*=2; alert("Correct! FG doubled!"); }
+  else{ fg=Math.floor(fg/2); alert("Wrong! FG halved!"); }
+  updateUI(); closeModal();
+}
+
+function memoryGridGame(){
+  const sequence=[];
+  const size=3;
+  let html=`<p>Memorize the sequence!</p><div id="memoryGrid"></div>`;
+  openModal("Memory Grid",html);
+  const grid = document.getElementById("memoryGrid");
+  for(let i=0;i<size*size;i++){
     const btn=document.createElement("button");
-    btn.textContent=g.name;
-    btn.addEventListener('click',()=>{closeModal(); g.func();});
-    li.appendChild(btn); ul.appendChild(li);
-  });
-  const div=document.createElement("div"); div.appendChild(ul);
-  openModal("Games Menu 🎮",div.innerHTML);
+    btn.disabled=true;
+    grid.appendChild(btn);
+  }
+  // generate sequence
+  for(let i=0;i<3;i++) sequence.push(Math.floor(Math.random()*9));
+  let idx=0;
+  function showSequence(){
+    const buttons=grid.querySelectorAll("button");
+    buttons.forEach(b=>b.style.background="");
+    if(idx<sequence.length){
+      buttons[sequence[idx]].style.background="yellow";
+      idx++;
+      setTimeout(showSequence,500);
+    } else {
+      buttons.forEach(b=>b.disabled=false);
+      let userIdx=0;
+      buttons.forEach((b,i)=>{
+        b.onclick=()=>{
+          if(i!==sequence[userIdx]){ alert("Wrong! FG halved!"); fg=Math.floor(fg/2); updateUI(); closeModal(); return; }
+          userIdx++;
+          b.style.background="green";
+          if(userIdx===sequence.length){ alert("Correct! FG doubled!"); fg*=2; updateUI(); closeModal(); }
+        };
+      });
+    }
+  }
+  showSequence();
 }
 
-// ===== MINI GAME PLACEHOLDER =====
-function coinFlip(){openModal("Coin Flip","<p>Heads or Tails!</p>");}
-function diceRoll(){openModal("Dice Roll","<p>Roll the dice!</p>");}
+// PLACEHOLDER GAMES (you can implement similar logic)
+function rapidClickBurstGame(){ fg*=2; alert("Rapid Click Burst! FG doubled!"); updateUI(); closeModal(); }
+function precisionHoldGame(){ fg*=2; alert("Precision Hold! FG doubled!"); updateUI(); closeModal(); }
+function riskButtonGame(){ fg*=2; alert("Risk Button! FG doubled!"); updateUI(); closeModal(); }
+function timeStopGame(){ fg*=2; alert("Time Stop! FG doubled!"); updateUI(); closeModal(); }
+function patternRecallGame(){ fg*=2; alert("Pattern Recall! FG doubled!"); updateUI(); closeModal(); }
 
-// ===== STARFIELD GALAXY BACKGROUND =====
-const canvas=document.getElementById("stars");
-const ctx=canvas.getContext("2d");
-canvas.width=window.innerWidth; canvas.height=window.innerHeight;
-
-const stars=[];
-for(let i=0;i<300;i++){
-  stars.push({
-    x:Math.random()*canvas.width,
-    y:Math.random()*canvas.height,
-    r:Math.random()*1.5+0.5,
-    speed:Math.random()*0.3+0.1,
-    color:`hsl(${Math.random()*360},70%,80%)`
-  });
+// ===== GAMBLE =====
+function openGamble(){
+  let amt=prompt("Enter amount of FG to gamble:");
+  amt=parseInt(amt);
+  if(isNaN(amt)||amt<=0){ alert("Invalid amount"); return; }
+  if(amt>fg){ alert("Not enough FG"); return; }
+  if(Math.random()<0.5){ fg+=amt; alert(`You won ${formatNumber(amt)} FG!`); }
+  else{ fg-=amt; alert(`You lost ${formatNumber(amt)} FG!`); }
+  updateUI();
 }
-function drawStars(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  const gradient=ctx.createRadialGradient(canvas.width/2,canvas.height/2,0,canvas.width/2,canvas.height/2,canvas.width/1.2);
-  gradient.addColorStop(0,"#0b132b");
-  gradient.addColorStop(1,"#090a1a");
-  ctx.fillStyle=gradient; ctx.fillRect(0,0,canvas.width,canvas.height);
-
-  stars.forEach(s=>{
-    ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fillStyle=s.color; ctx.fill();
-    s.y+=s.speed; if(s.y>canvas.height) s.y=0;
-  });
-  requestAnimationFrame(drawStars);
-}
-drawStars();
 
 updateUI();
 </script>
 </body>
+</html>
