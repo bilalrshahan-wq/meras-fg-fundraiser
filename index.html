@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Meras FG Fundraiser</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background: #0f0f12;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin: 0;
+    }
+
+    .subtitle {
+      opacity: 0.7;
+      margin-top: 5px;
+    }
+
+    .counter {
+      margin-top: 20px;
+      font-size: 2rem;
+    }
+
+    .plus {
+      position: absolute;
+      color: #7cffc4;
+      font-weight: bold;
+      animation: floatUp 0.9s ease-out forwards;
+      pointer-events: none;
+    }
+
+    @keyframes floatUp {
+      from { opacity: 1; transform: translateY(0); }
+      to { opacity: 0; transform: translateY(-40px); }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Meras FG Fundraiser</h1>
+  <div class="subtitle">Click to get free fg</div>
+  <div class="counter">FG: <span id="count">0</span></div>
+
+  <script>
+    let fg = 0;
+    const count = document.getElementById("count");
+
+    document.addEventListener("click", (e) => {
+      fg++;
+      count.textContent = fg;
+
+      const plus = document.createElement("div");
+      plus.className = "plus";
+      plus.textContent = "+1 fg";
+      plus.style.left = e.clientX + "px";
+      plus.style.top = e.clientY + "px";
+
+      document.body.appendChild(plus);
+      setTimeout(() => plus.remove(), 900);
+    });
+  </script>
+
+</body>
+</html>
