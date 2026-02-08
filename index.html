@@ -1,78 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Meras FG Fundraiser</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    * { box-sizing: border-box; }
     body {
       margin: 0;
-      height: 100vh;
-      background: #0f0f12;
-      color: white;
-      font-family: Arial, sans-serif;
+      min-height: 100vh;
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      background: radial-gradient(ellipse at bottom, #0b0f2a 0%, #05060f 60%, #000 100%);
+      color: #ffffff;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
       cursor: pointer;
       user-select: none;
       overflow: hidden;
     }
 
-    h1 {
-      font-size: 3rem;
-      margin: 0;
-    }
-
-    .subtitle {
-      opacity: 0.7;
-      margin-top: 5px;
-    }
-
-    .counter {
-      margin-top: 20px;
-      font-size: 2rem;
-    }
-
-    .plus {
-      position: absolute;
-      color: #7cffc4;
-      font-weight: bold;
-      animation: floatUp 0.9s ease-out forwards;
+    /* STARFIELD */
+    .stars, .stars2, .stars3 {
+      position: fixed;
+      inset: 0;
+      background-repeat: repeat;
+      animation: moveStars linear infinite;
       pointer-events: none;
     }
-
-    @keyframes floatUp {
-      from { opacity: 1; transform: translateY(0); }
-      to { opacity: 0; transform: translateY(-40px); }
+    .stars { animation-duration: 90s; opacity: .5;
+      background-image: radial-gradient(2px 2px at 20px 30px, #fff, transparent 40%), radial-gradient(1px 1px at 80px 120px, #9cf, transparent 40%), radial-gradient(1px 1px at 140px 60px, #fff, transparent 40%);
     }
+    .stars2 { animation-duration: 140s; opacity: .35;
+      background-image: radial-gradient(2px 2px at 50px 80px, #fff, transparent 40%), radial-gradient(1px 1px at 160px 40px, #bdf, transparent 40%), radial-gradient(1px 1px at 10px 140px, #fff, transparent 40%);
+    }
+    .stars3 { animation-duration: 220s; opacity: .25;
+      background-image: radial-gradient(2px 2px at 90px 20px, #fff, transparent 40%), radial-gradient(1px 1px at 30px 160px, #def, transparent 40%), radial-gradient(1px 1px at 120px 120px, #fff, transparent 40%);
+    }
+    @keyframes moveStars { from { background-position: 0 0; } to { background-position: 0 1000px; } }
+
+    /* LAYOUT */
+    .shop, .multiplierShop {
+      width: 300px;
+      background: rgba(10, 12, 28, 0.85);
+      border-right: 1px solid rgba(255,255,255,0.08);
+      padding: 14px;
+      overflow-y: auto;
+    }
+    .multiplierShop { border-right: none; border-left: 1px solid rgba(255,255,255,0.08); }
+
+    .item {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    .item b { display:block; }
+    .item small { opacity:.8; }
+    .item button {
+      margin-top: 8px; width:100%; padding:8px; border-radius:8px; border:none;
+      background:#7cffc4; font-weight:700; cursor:pointer;
+    }
+    .item button:disabled { background:#555; cursor:not-allowed; opacity:.7; }
+
+    .main { flex:1; display:flex; align-items:center; justify-content:center; text-align:center; position:relative; }
+
+    h1 { font-size:3rem; margin:0; }
+    .subtitle { opacity:.75; margin-top:6px; }
+    .counter { font-size:2rem; margin-top:20px; }
+    .cps { opacity:.8; margin-top:6px; }
+
+    .float-text {
+      position:absolute; color:#7cffc4; font-weight:700; pointer-events:none;
+      animation: rise .9s ease-out forwards;
+    }
+    @keyframes rise { from{opacity:1; transform:translateY(0);} to{opacity:0; transform:translateY(-40px);} }
   </style>
 </head>
 <body>
+  <div class="stars"></div><div class="stars2"></div><div class="stars3"></div>
 
-  <h1>Meras FG Fundraiser</h1>
-  <div class="subtitle">Click to get free fg</div>
-  <div class="counter">FG: <span id="count">0</span></div>
+  <!-- LEFT SHOP -->
+  <div class="shop">
+    <h2>Auto Clicker Shop</h2>
+    <div id="shopItems"></div>
+  </div>
 
-  <script>
-    let fg = 0;
-    const count = document.getElementById("count");
+  <!-- MAIN -->
+  <div class="main">
+    <div>
+      <h1>Meras FG Fundraiser</h1>
+      <div class="subtitle">Click to get free fg</div>
+      <div class="counter">FG: <span id="count">0</span></div>
+      <div class="cps">FG/sec: <span id="cps">0</span></div>
+      <div class="cps">Click Multiplier: x<span id="mult">1</span></div>
+    </div>
+  </div>
 
-    document.addEventListener("click", (e) => {
-      fg++;
-      count.textContent = fg;
+  <!-- RIGHT SHOP -->
+  <div class="multiplierShop">
+    <h2>Why do you want fg (click multiplier)</h2>
+    <div id="multItems"></div>
+  </div>
 
-      const plus = document.createElement("div");
-      plus.className = "plus";
-      plus.textContent = "+1 fg";
-      plus.style.left = e.clientX + "px";
-      plus.style.top = e.clientY + "px";
+<script>
+  let fg = 0;
+  let cps = 0;
+  let multiplier = 1;
 
-      document.body.appendChild(plus);
-      setTimeout(() => plus.remove(), 900);
+  const countEl = document.getElementById('count');
+  const cpsEl = document.getElementById('cps');
+  const multEl = document.getElementById('mult');
+
+  function addFG(amount){ fg += amount; countEl.textContent = fg; }
+
+  document.addEventListener('click', e => {
+    if(e.target.closest('.shop') || e.target.closest('.multiplierShop')) return;
+    addFG(1 * multiplier);
+    const t = document.createElement('div');
+    t.className='float-text';
+    t.textContent = `+${1*multiplier} fg`;
+    t.style.left = e.clientX+'px'; t.style.top = e.clientY+'px';
+    document.body.appendChild(t); setTimeout(()=>t.remove(),900);
+  });
+
+  const items = [
+    {name:'Mera', price:25, power:1},
+    {name:'Tom', price:100, power:3},
+    {name:'F5', price:300, power:8},
+    {name:'PRX', price:750, power:18},
+    {name:'India All Stars', price:1500, power:35},
+    {name:'stxcked', price:3000, power:70},
+    {name:'Shin', price:6000, power:140},
+    {name:'Tom Prime vs EU', price:12000, power:300},
+    {name:'Prime Mera', price:50000, power:1500}
+  ];
+
+  const multipliers = [
+    {reason:'4 inb', mult:2, price:5000},
+    {reason:'3 walls', mult:3, price:12000},
+    {reason:'illegal style', mult:5, price:30000},
+    {reason:'banned move', mult:8, price:70000},
+    {reason:'fg because you feel like it', mult:12, price:150000},
+    {reason:'Cheating', mult:20, price:400000},
+    {reason:'hacks', mult:35, price:900000},
+    {reason:'illegal flags', mult:60, price:2000000},
+    {reason:'Paused timer', mult:100, price:5000000},
+    {reason:'PS abuse', mult:250, price:20000000}
+  ];
+
+  const shop = document.getElementById('shopItems');
+  const multShop = document.getElementById('multItems');
+
+  function render(){
+    shop.innerHTML=''; multShop.innerHTML='';
+    items.forEach((it,i)=>{
+      const d=document.createElement('div'); d.className='item';
+      d.innerHTML=`<b>${it.name}</b><small>+${it.power} fg/sec</small><br><small>Cost: ${it.price}</small>`;
+      const b=document.createElement('button'); b.textContent='Buy'; b.disabled=fg<it.price;
+      b.onclick=()=>{ fg-=it.price; cps+=it.power; update(); };
+      d.appendChild(b); shop.appendChild(d);
     });
-  </script>
+    multipliers.forEach(m=>{
+      const d=document.createElement('div'); d.className='item';
+      d.innerHTML=`<b>${m.reason}</b><small>x${m.mult} clicks</small><br><small>Cost: ${m.price}</small>`;
+      const b=document.createElement('button'); b.textContent='Buy'; b.disabled=fg<m.price;
+      b.onclick=()=>{ fg-=m.price; multiplier*=m.mult; update(); };
+      d.appendChild(b); multShop.appendChild(d);
+    });
+  }
 
+  function update(){
+    countEl.textContent=fg; cpsEl.textContent=cps*multiplier; multEl.textContent=multiplier; render();
+  }
+
+  setInterval(()=>{ if(cps>0) addFG(cps*multiplier); update(); },1000);
+  render();
+</script>
 </body>
 </html>
