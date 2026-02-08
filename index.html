@@ -1,180 +1,263 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Meras FG Fundraiser</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      background: radial-gradient(ellipse at bottom, #0b0f2a 0%, #05060f 60%, #000 100%);
-      color: #ffffff;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-      cursor: pointer;
-      user-select: none;
-      overflow: hidden;
-    }
+<meta charset="UTF-8">
+<title>Meras FG Fundraiser</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    /* STARFIELD */
-    .stars, .stars2, .stars3 {
-      position: fixed;
-      inset: 0;
-      background-repeat: repeat;
-      animation: moveStars linear infinite;
-      pointer-events: none;
-    }
-    .stars { animation-duration: 90s; opacity: .5;
-      background-image: radial-gradient(2px 2px at 20px 30px, #fff, transparent 40%), radial-gradient(1px 1px at 80px 120px, #9cf, transparent 40%), radial-gradient(1px 1px at 140px 60px, #fff, transparent 40%);
-    }
-    .stars2 { animation-duration: 140s; opacity: .35;
-      background-image: radial-gradient(2px 2px at 50px 80px, #fff, transparent 40%), radial-gradient(1px 1px at 160px 40px, #bdf, transparent 40%), radial-gradient(1px 1px at 10px 140px, #fff, transparent 40%);
-    }
-    .stars3 { animation-duration: 220s; opacity: .25;
-      background-image: radial-gradient(2px 2px at 90px 20px, #fff, transparent 40%), radial-gradient(1px 1px at 30px 160px, #def, transparent 40%), radial-gradient(1px 1px at 120px 120px, #fff, transparent 40%);
-    }
-    @keyframes moveStars { from { background-position: 0 0; } to { background-position: 0 1000px; } }
+<style>
+* {
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
 
-    /* LAYOUT */
-    .shop, .multiplierShop {
-      width: 300px;
-      background: rgba(10, 12, 28, 0.85);
-      border-right: 1px solid rgba(255,255,255,0.08);
-      padding: 14px;
-      overflow-y: auto;
-    }
-    .multiplierShop { border-right: none; border-left: 1px solid rgba(255,255,255,0.08); }
+body {
+  margin: 0;
+  height: 100vh;
+  overflow: hidden;
+  color: white;
+  background: radial-gradient(circle at bottom, #0b132b, #000);
+}
 
-    .item {
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 10px;
-      padding: 10px;
-      margin-bottom: 10px;
-    }
-    .item b { display:block; }
-    .item small { opacity:.8; }
-    .item button {
-      margin-top: 8px; width:100%; padding:8px; border-radius:8px; border:none;
-      background:#7cffc4; font-weight:700; cursor:pointer;
-    }
-    .item button:disabled { background:#555; cursor:not-allowed; opacity:.7; }
+/* ===== STAR BACKGROUND ===== */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(1px 1px at 20% 30%, white, transparent),
+    radial-gradient(1px 1px at 80% 70%, white, transparent),
+    radial-gradient(1px 1px at 50% 10%, white, transparent);
+  animation: stars 20s linear infinite;
+  opacity: 0.4;
+  pointer-events: none;
+}
 
-    .main { flex:1; display:flex; align-items:center; justify-content:center; text-align:center; position:relative; }
+@keyframes stars {
+  from { transform: translateY(0); }
+  to { transform: translateY(1000px); }
+}
 
-    h1 { font-size:3rem; margin:0; }
-    .subtitle { opacity:.75; margin-top:6px; }
-    .counter { font-size:2rem; margin-top:20px; }
-    .cps { opacity:.8; margin-top:6px; }
+/* ===== MAIN LAYOUT ===== */
+.wrapper {
+  display: flex;
+  height: 100vh;
+  padding: 12px;
+  gap: 12px;
+}
 
-    .float-text {
-      position:absolute; color:#7cffc4; font-weight:700; pointer-events:none;
-      animation: rise .9s ease-out forwards;
-    }
-    @keyframes rise { from{opacity:1; transform:translateY(0);} to{opacity:0; transform:translateY(-40px);} }
-  </style>
+/* ===== SHOPS ===== */
+.shop {
+  width: 260px;
+  background: rgba(15, 20, 40, 0.85);
+  border-radius: 12px;
+  padding: 12px;
+  overflow-y: auto;
+}
+
+.shop h2 {
+  text-align: center;
+  margin: 6px 0 10px;
+  font-size: 18px;
+}
+
+/* Scrollbar */
+.shop::-webkit-scrollbar {
+  width: 6px;
+}
+.shop::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 6px;
+}
+
+/* ===== SHOP ITEMS ===== */
+.item {
+  background: rgba(255,255,255,0.06);
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+
+.item b {
+  font-size: 14px;
+}
+
+.item button {
+  width: 100%;
+  margin-top: 6px;
+  padding: 6px;
+  background: #333;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.item button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ===== CENTER ===== */
+.center {
+  flex: 1;
+  background: rgba(0,0,0,0.35);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.center h1 {
+  font-size: 28px;
+  margin-bottom: 6px;
+}
+
+.center button {
+  margin-top: 12px;
+  padding: 14px 24px;
+  font-size: 16px;
+  background: #1f3cff;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* ===== SMALL TEXT ===== */
+.stats {
+  margin-top: 10px;
+  font-size: 14px;
+  opacity: 0.85;
+}
+</style>
 </head>
+
 <body>
-  <div class="stars"></div><div class="stars2"></div><div class="stars3"></div>
+
+<div class="wrapper">
 
   <!-- LEFT SHOP -->
-  <div class="shop">
+  <div class="shop" id="autoShop">
     <h2>Auto Clicker Shop</h2>
-    <div id="shopItems"></div>
   </div>
 
-  <!-- MAIN -->
-  <div class="main">
-    <div>
-      <h1>Meras FG Fundraiser</h1>
-      <div class="subtitle">Click to get free fg</div>
-      <div class="counter">FG: <span id="count">0</span></div>
-      <div class="cps">FG/sec: <span id="cps">0</span></div>
-      <div class="cps">Click Multiplier: x<span id="mult">1</span></div>
-    </div>
+  <!-- CENTER -->
+  <div class="center">
+    <h1>Meras FG Fundraiser</h1>
+    <div class="stats">Click to get free fg</div>
+    <div class="stats"><b>FG:</b> <span id="fg">0</span></div>
+    <div class="stats">FG/sec: <span id="fgps">0</span></div>
+    <div class="stats">Click Multiplier: x<span id="multi">1</span></div>
+    <button onclick="clickFG()">CLICK</button>
   </div>
 
   <!-- RIGHT SHOP -->
-  <div class="multiplierShop">
+  <div class="shop" id="multiShop">
     <h2>Why do you want fg (click multiplier)</h2>
-    <div id="multItems"></div>
   </div>
 
+</div>
+
 <script>
-  let fg = 0;
-  let cps = 0;
-  let multiplier = 1;
+let fg = 0;
+let fgps = 0;
+let multiplier = 1;
 
-  const countEl = document.getElementById('count');
-  const cpsEl = document.getElementById('cps');
-  const multEl = document.getElementById('mult');
+const fgEl = document.getElementById("fg");
+const fgpsEl = document.getElementById("fgps");
+const multiEl = document.getElementById("multi");
 
-  function addFG(amount){ fg += amount; countEl.textContent = fg; }
+function updateUI() {
+  fgEl.textContent = Math.floor(fg);
+  fgpsEl.textContent = fgps;
+  multiEl.textContent = multiplier;
+}
 
-  document.addEventListener('click', e => {
-    if(e.target.closest('.shop') || e.target.closest('.multiplierShop')) return;
-    addFG(1 * multiplier);
-    const t = document.createElement('div');
-    t.className='float-text';
-    t.textContent = `+${1*multiplier} fg`;
-    t.style.left = e.clientX+'px'; t.style.top = e.clientY+'px';
-    document.body.appendChild(t); setTimeout(()=>t.remove(),900);
-  });
+function clickFG() {
+  fg += multiplier;
+  updateUI();
+}
 
-  const items = [
-    {name:'Mera', price:25, power:1},
-    {name:'Tom', price:100, power:3},
-    {name:'F5', price:300, power:8},
-    {name:'PRX', price:750, power:18},
-    {name:'India All Stars', price:1500, power:35},
-    {name:'stxcked', price:3000, power:70},
-    {name:'Shin', price:6000, power:140},
-    {name:'Tom Prime vs EU', price:12000, power:300},
-    {name:'Prime Mera', price:50000, power:1500}
-  ];
+/* ===== AUTO CLICKERS ===== */
+const autos = [
+  ["Mera", 1, 25],
+  ["Tom", 3, 100],
+  ["F5", 8, 300],
+  ["PRX", 18, 750],
+  ["India All Stars", 35, 1500],
+  ["stxcked", 70, 3000],
+  ["Shin", 140, 6000],
+  ["Prime Mera", 500, 25000]
+];
 
-  const multipliers = [
-    {reason:'4 inb', mult:2, price:5000},
-    {reason:'3 walls', mult:3, price:12000},
-    {reason:'illegal style', mult:5, price:30000},
-    {reason:'banned move', mult:8, price:70000},
-    {reason:'fg because you feel like it', mult:12, price:150000},
-    {reason:'Cheating', mult:20, price:400000},
-    {reason:'hacks', mult:35, price:900000},
-    {reason:'illegal flags', mult:60, price:2000000},
-    {reason:'Paused timer', mult:100, price:5000000},
-    {reason:'PS abuse', mult:250, price:20000000}
-  ];
+const autoShop = document.getElementById("autoShop");
 
-  const shop = document.getElementById('shopItems');
-  const multShop = document.getElementById('multItems');
+autos.forEach(a => {
+  const div = document.createElement("div");
+  div.className = "item";
+  div.innerHTML = `
+    <b>${a[0]}</b><br>
+    +${a[1]} fg/sec<br>
+    Cost: ${a[2]}
+    <button>Buy</button>
+  `;
+  const btn = div.querySelector("button");
+  btn.onclick = () => {
+    if (fg >= a[2]) {
+      fg -= a[2];
+      fgps += a[1];
+      updateUI();
+    }
+  };
+  autoShop.appendChild(div);
+});
 
-  function render(){
-    shop.innerHTML=''; multShop.innerHTML='';
-    items.forEach((it,i)=>{
-      const d=document.createElement('div'); d.className='item';
-      d.innerHTML=`<b>${it.name}</b><small>+${it.power} fg/sec</small><br><small>Cost: ${it.price}</small>`;
-      const b=document.createElement('button'); b.textContent='Buy'; b.disabled=fg<it.price;
-      b.onclick=()=>{ fg-=it.price; cps+=it.power; update(); };
-      d.appendChild(b); shop.appendChild(d);
-    });
-    multipliers.forEach(m=>{
-      const d=document.createElement('div'); d.className='item';
-      d.innerHTML=`<b>${m.reason}</b><small>x${m.mult} clicks</small><br><small>Cost: ${m.price}</small>`;
-      const b=document.createElement('button'); b.textContent='Buy'; b.disabled=fg<m.price;
-      b.onclick=()=>{ fg-=m.price; multiplier*=m.mult; update(); };
-      d.appendChild(b); multShop.appendChild(d);
-    });
-  }
+/* ===== MULTIPLIERS ===== */
+const mults = [
+  ["4 inb", 2, 5000],
+  ["3 walls", 3, 12000],
+  ["illegal style", 5, 30000],
+  ["banned move", 8, 70000],
+  ["fg because you feel like it", 12, 150000],
+  ["Cheating", 20, 400000],
+  ["hacks", 35, 900000],
+  ["Prime FG", 100, 5000000]
+];
 
-  function update(){
-    countEl.textContent=fg; cpsEl.textContent=cps*multiplier; multEl.textContent=multiplier; render();
-  }
+const multiShop = document.getElementById("multiShop");
 
-  setInterval(()=>{ if(cps>0) addFG(cps*multiplier); update(); },1000);
-  render();
+mults.forEach(m => {
+  const div = document.createElement("div");
+  div.className = "item";
+  div.innerHTML = `
+    <b>${m[0]}</b><br>
+    x${m[1]} clicks<br>
+    Cost: ${m[2]}
+    <button>Buy</button>
+  `;
+  const btn = div.querySelector("button");
+  btn.onclick = () => {
+    if (fg >= m[2]) {
+      fg -= m[2];
+      multiplier = m[1];
+      updateUI();
+    }
+  };
+  multiShop.appendChild(div);
+});
+
+/* ===== AUTO LOOP ===== */
+setInterval(() => {
+  fg += fgps * multiplier;
+  updateUI();
+}, 1000);
+
+updateUI();
 </script>
+
 </body>
 </html>
