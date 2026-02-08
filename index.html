@@ -31,4 +31,113 @@ body::before{content:"";position:fixed;inset:0;background:
 .stats{margin-top:10px;font-size:14px;opacity:0.85;}
 
 .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);justify-content:center;align-items:center;z-index:100;pointer-events:none;}
-.modal-content{background:#111;padding:20px;border-radius:12px;max-width:900px;width:90%;text-align:center;position:relative;overflow:auto;max-heigh
+.modal-content{background:#111;padding:20px;border-radius:12px;max-width:900px;width:90%;text-align:center;position:relative;overflow:auto;max-height:90vh;}
+.modal-content button.close{position:absolute;top:8px;right:8px;background:red;color:white;border:none;border-radius:6px;cursor:pointer;padding:4px 8px;}
+#shopBtn{position:fixed;bottom:20px;right:20px;padding:14px 20px;background:#1f3cff;border:none;border-radius:10px;color:white;cursor:pointer;font-weight:bold;z-index:200;}
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+  <div class="shop" id="autoShop"><h2>Auto Clicker Shop</h2></div>
+  <div class="center">
+    <h1>Meras FG Fundraiser</h1>
+    <div class="stats">Click to get free FG</div>
+    <div class="stats"><b>FG:</b> <span id="fg">0</span></div>
+    <div class="stats">Click Multiplier: x<span id="multi">1</span></div>
+    <button id="clickBtn">CLICK</button>
+    <button onclick="openGames()">Games Menu 🎮</button>
+    <button onclick="openGamble()">Gamble 🎲</button>
+    <button onclick="openLeaderboard()">Leaderboard 🏆</button>
+  </div>
+  <div class="shop" id="multiShop"><h2>Click Multipliers</h2></div>
+</div>
+
+<button id="shopBtn" onclick="openPotionShop()">Shop 🧪</button>
+
+<div class="modal" id="modal">
+  <div class="modal-content" id="modalContent">
+    <button class="close" onclick="closeModal()">X</button>
+    <h2 id="modalTitle">Modal</h2>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+// ===== CORE VARIABLES =====
+let fg=0, multiplier=1, username=null;
+const fgEl=document.getElementById("fg"), multiEl=document.getElementById("multi");
+
+// ===== SAVE SYSTEM =====
+function save(){ localStorage.setItem("fgGame",JSON.stringify({fg,multiplier,username})); }
+function load(){ const data=JSON.parse(localStorage.getItem("fgGame")); if(data){ fg=data.fg; multiplier=data.multiplier; username=data.username; } }
+load();
+if(!username){ username=prompt("Enter your username:","Player"); save(); }
+
+// ===== UI =====
+function updateUI(){ fgEl.textContent=fg; multiEl.textContent=multiplier; save(); }
+document.getElementById("clickBtn").onclick = ()=>{ fg+=multiplier; updateUI(); };
+
+// ===== SHOPS =====
+const autos=[["Mera",1,25],["Tom",3,100],["F5",8,300],["PRX",18,750],["India All Stars",35,1500],["stxcked",70,3000],["Shin",140,6000],["Prime Mera",500,25000],["God Tier Mera",5000,250000],["Legendary Mera",50000,2500000],["Trillion Mera",1e12,1e11]];
+const autoShop=document.getElementById("autoShop");
+autos.forEach(a=>{
+  const div=document.createElement("div"); div.className="item";
+  div.innerHTML=`<b>${a[0]}</b><br>Cost: ${a[2]}<button>Buy</button>`;
+  div.querySelector("button").onclick=()=>{ if(fg>=a[2]){ fg-=a[2]; updateUI(); alert("Bought "+a[0]); } };
+  autoShop.appendChild(div);
+});
+const mults=[["4 inb",2,5000],["3 walls",3,12000],["illegal style",5,30000],["banned move",8,70000],["fg for fun",12,150000]];
+const multiShop=document.getElementById("multiShop");
+mults.forEach(m=>{
+  const div=document.createElement("div"); div.className="item";
+  div.innerHTML=`<b>${m[0]}</b><br>x${m[1]} clicks<br>Cost: ${m[2]}<button>Buy</button>`;
+  div.querySelector("button").onclick=()=>{ if(fg>=m[2]){ fg-=m[2]; multiplier=m[1]; updateUI(); } };
+  multiShop.appendChild(div);
+});
+
+// ===== MODAL =====
+const modal=document.getElementById("modal");
+function openModal(title,body){ modal.style.display="flex"; modal.style.pointerEvents="auto"; document.getElementById("modalTitle").textContent=title; document.getElementById("modalBody").innerHTML=body; }
+function closeModal(){ modal.style.display="none"; modal.style.pointerEvents="none"; }
+
+// ===== GAMES & GAMBLE PLACEHOLDERS =====
+function openGames(){ 
+  let html="<p>Games Menu will appear here!</p>";
+  html+="<button onclick='alert(\"Game placeholder\");'>Play Game 1</button>";
+  html+="<button onclick='alert(\"Game placeholder\");'>Play Game 2</button>";
+  openModal("Games Menu 🎮",html);
+}
+
+function openGamble(){
+  let html="<p>Gamble Menu will appear here!</p>";
+  html+="<button onclick='alert(\"Coin Flip placeholder\");'>Coin Flip</button>";
+  html+="<button onclick='alert(\"Dice Roll placeholder\");'>Dice Roll</button>";
+  openModal("Gamble 🎲",html);
+}
+
+// ===== POTION SHOP =====
+function openPotionShop(){
+  let html=`<p>Buy potions to boost FG temporarily!</p>
+  <button onclick="alert('Potion placeholder');">x2 Click Multiplier (60s) - 20k FG</button>`;
+  openModal("Potion Shop 🧪",html);
+}
+
+// ===== LEADERBOARD =====
+function openLeaderboard(){
+  let lb=JSON.parse(localStorage.getItem("fgLeaderboard"))||[];
+  lb=lb.filter((v,i,a)=>a.findIndex(t=>t.name===v.name)===i);
+  lb.push({name:username,fg:fg});
+  lb.sort((a,b)=>b.fg-a.fg);
+  if(lb.length>5) lb=lb.slice(0,5);
+  localStorage.setItem("fgLeaderboard",JSON.stringify(lb));
+  let html="<ol>";
+  lb.forEach(e=> html+=`<li>${e.name}: ${e.fg} FG</li>`);
+  html+="</ol><p>Top 5 reward: 100 Robux!</p>";
+  openModal("Leaderboard 🏆",html);
+}
+
+updateUI();
+</script>
+</body>
+</html>
