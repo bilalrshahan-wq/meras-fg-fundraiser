@@ -35,6 +35,7 @@ body::before{content:"";position:fixed;inset:0;background:
 .modal-content button.close{position:absolute;top:8px;right:8px;background:red;color:white;border:none;border-radius:6px;cursor:pointer;padding:4px 8px;}
 .modal-content button.game-btn{margin-top:12px;padding:6px 12px;cursor:pointer;}
 #shopBtn{position:fixed;bottom:20px;right:20px;padding:14px 20px;background:#1f3cff;border:none;border-radius:10px;color:white;cursor:pointer;font-weight:bold;z-index:200;}
+canvas#flappy{background:#222;margin-top:10px;border-radius:10px;}
 </style>
 </head>
 <body>
@@ -66,22 +67,22 @@ body::before{content:"";position:fixed;inset:0;background:
 </div>
 
 <script>
-// ==== CORE VARIABLES ====
+// ===== CORE VARIABLES =====
 let fg=0, fgps=0, multiplier=1, username=null;
 const fgEl=document.getElementById("fg"), fgpsEl=document.getElementById("fgps"), multiEl=document.getElementById("multi");
 let activePotion=null, potionTimer=null;
 
-// ==== SAVE SYSTEM ====
+// ===== SAVE SYSTEM =====
 function save(){ localStorage.setItem("fgGame",JSON.stringify({fg,fgps,multiplier,username})); }
 function load(){ const data=JSON.parse(localStorage.getItem("fgGame")); if(data){ fg=data.fg; fgps=data.fgps; multiplier=data.multiplier; username=data.username; } }
 load();
 if(!username){ username=prompt("Enter your username:","Player"); save(); }
 
-// ==== UI UPDATE ====
+// ===== UI =====
 function updateUI(){ fgEl.textContent=formatNumber(fg); fgpsEl.textContent=formatNumber(fgps); multiEl.textContent=formatNumber(multiplier); save(); }
 function clickFG(){ fg+=multiplier; updateUI(); }
 
-// ==== SHOPS ====
+// ===== SHOPS =====
 const autos=[["Mera",1,25],["Tom",3,100],["F5",8,300],["PRX",18,750],["India All Stars",35,1500],["stxcked",70,3000],["Shin",140,6000],["Prime Mera",500,25000],["God Tier Mera",5000,250000],["Legendary Mera",50000,2500000],["Trillion Mera",1e12,1e11]];
 const autoShop=document.getElementById("autoShop");
 autos.forEach(a=>{
@@ -99,18 +100,18 @@ mults.forEach(m=>{
   multiShop.appendChild(div);
 });
 
-// ==== AUTO LOOP ====
+// ===== AUTO LOOP =====
 setInterval(()=>{ fg+=fgps*multiplier; updateUI(); },1000);
 
-// ==== NUMBER FORMATTER ====
+// ===== FORMAT NUMBERS =====
 function formatNumber(num){ if(num>=1e12)return(num/1e12).toFixed(2)+"T"; if(num>=1e9)return(num/1e9).toFixed(2)+"B"; if(num>=1e6)return(num/1e6).toFixed(2)+"M"; if(num>=1e3)return(num/1e3).toFixed(1)+"K"; return Math.floor(num); }
 
-// ==== MODAL ====
+// ===== MODAL =====
 const modal=document.getElementById("modal");
 function openModal(title,body){ modal.style.display="flex"; modal.style.pointerEvents="auto"; document.getElementById("modalTitle").textContent=title; document.getElementById("modalBody").innerHTML=body; }
 function closeModal(){ modal.style.display="none"; modal.style.pointerEvents="none"; }
 
-// ==== LEADERBOARD ====
+// ===== LEADERBOARD =====
 function openLeaderboard(){
   let lb=JSON.parse(localStorage.getItem("fgLeaderboard"))||[];
   lb=lb.filter((v,i,a)=>a.findIndex(t=>t.name===v.name)===i);
@@ -124,7 +125,7 @@ function openLeaderboard(){
   openModal("Leaderboard 🏆",html);
 }
 
-// ==== POTION SHOP ====
+// ===== POTION SHOP =====
 function openPotionShop(){
   let html=`<p>Buy potions to boost FG temporarily!</p>
   <button onclick="buyPotion('x2 Click Multiplier',20000,60)">x2 Click Multiplier (60s) - 20k FG</button>
