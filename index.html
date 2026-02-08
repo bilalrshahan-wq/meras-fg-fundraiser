@@ -5,32 +5,12 @@
 <title>Meras FG Fundraiser</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-* { box-sizing: border-box; font-family: Arial, sans-serif; margin:0; padding:0;}
-body { 
-  height: 100vh; 
-  overflow: hidden; 
-  background: radial-gradient(circle at bottom, #0b132b, #000); 
-  color: white;
-}
-/* ===== STAR BACKGROUND ===== */
-body::before {
-  content:"";
-  position: fixed;
-  inset:0;
-  background:
-    radial-gradient(1px 1px at 10% 20%, white, transparent),
-    radial-gradient(1px 1px at 30% 80%, white, transparent),
-    radial-gradient(1px 1px at 70% 50%, white, transparent),
-    radial-gradient(1px 1px at 90% 10%, white, transparent);
-  animation: stars 25s linear infinite;
-  opacity:0.4;
-  pointer-events:none;
-}
+* { box-sizing:border-box; font-family:Arial,sans-serif;margin:0;padding:0;}
+body { height:100vh; background:radial-gradient(circle at bottom,#0b132b,#000); color:white; overflow:hidden;}
+body::before { content:""; position:fixed; inset:0; background: radial-gradient(1px 1px at 10% 20%, white, transparent), radial-gradient(1px 1px at 30% 80%, white, transparent), radial-gradient(1px 1px at 70% 50%, white, transparent), radial-gradient(1px 1px at 90% 10%, white, transparent); animation:stars 25s linear infinite; opacity:0.4; pointer-events:none;}
 @keyframes stars { from{transform:translateY(0);} to{transform:translateY(1000px);} }
-
-/* ===== LAYOUT ===== */
-.wrapper { display:flex; height:100vh; gap:12px; padding:12px; }
-.shop { width:280px; background: rgba(15,20,40,0.85); border-radius:12px; padding:12px; overflow-y:auto; }
+.wrapper { display:flex; height:100vh; gap:12px; padding:12px;}
+.shop { width:280px; background: rgba(15,20,40,0.85); border-radius:12px; padding:12px; overflow-y:auto;}
 .shop h2 { text-align:center; margin:6px 0 10px; font-size:18px; }
 .shop::-webkit-scrollbar { width:6px; }
 .shop::-webkit-scrollbar-thumb { background:#555; border-radius:6px; }
@@ -38,19 +18,14 @@ body::before {
 .item b { font-size:14px; }
 .item button { width:100%; margin-top:6px; padding:6px; background:#333; color:white; border:none; border-radius:6px; cursor:pointer;}
 .item button:disabled { opacity:0.4; cursor:not-allowed; }
-
 .center { flex:1; background: rgba(0,0,0,0.35); border-radius:14px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:12px;}
 .center h1 { font-size:28px; margin-bottom:6px;}
 .center button { margin-top:12px; padding:14px 24px; font-size:16px; background:#1f3cff; color:white; border:none; border-radius:10px; cursor:pointer; }
 .stats { margin-top:10px; font-size:14px; opacity:0.85; }
-
-/* ===== MODAL ===== */
 .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); justify-content:center; align-items:center; z-index:100; }
 .modal-content { background:#111; padding:20px; border-radius:12px; max-width:600px; width:90%; text-align:center; position:relative; }
 .modal-content button.close { position:absolute; top:8px; right:8px; background:red; color:white; border:none; border-radius:6px; cursor:pointer; padding:4px 8px; }
 .modal-content button.game-btn { margin-top:12px; padding:6px 12px; cursor:pointer; }
-
-/* ===== GAME STYLES ===== */
 #gameCanvas { background:#222; border-radius:10px; margin-top:10px; }
 #memoryGrid button { margin:2px; width:40px; height:40px; }
 </style>
@@ -58,13 +33,7 @@ body::before {
 <body>
 
 <div class="wrapper">
-
-  <!-- LEFT SHOP -->
-  <div class="shop" id="autoShop">
-    <h2>Auto Clicker Shop</h2>
-  </div>
-
-  <!-- CENTER -->
+  <div class="shop" id="autoShop"><h2>Auto Clicker Shop</h2></div>
   <div class="center">
     <h1>Meras FG Fundraiser</h1>
     <div class="stats">Click to get free FG</div>
@@ -76,15 +45,9 @@ body::before {
     <button onclick="openGamble()">Gamble 🎲</button>
     <button onclick="openLeaderboard()">Leaderboard 🏆</button>
   </div>
-
-  <!-- RIGHT SHOP -->
-  <div class="shop" id="multiShop">
-    <h2>Click Multipliers</h2>
-  </div>
-
+  <div class="shop" id="multiShop"><h2>Click Multipliers</h2></div>
 </div>
 
-<!-- MODAL -->
 <div class="modal" id="modal">
   <div class="modal-content" id="modalContent">
     <button class="close" onclick="closeModal()">X</button>
@@ -94,251 +57,119 @@ body::before {
 </div>
 
 <script>
-// ===== CORE VARIABLES =====
-let fg = 0;
-let fgps = 0;
-let multiplier = 1;
-
-// ===== SAVE SYSTEM =====
-function save() {
-  localStorage.setItem("fgGame", JSON.stringify({fg, fgps, multiplier}));
-}
-function load() {
-  const data = JSON.parse(localStorage.getItem("fgGame"));
-  if(data){ fg=data.fg; fgps=data.fgps; multiplier=data.multiplier; }
-}
-load();
-
-// ===== UI ELEMENTS =====
+// ==== CORE VARIABLES ====
+let fg=0, fgps=0, multiplier=1;
 const fgEl = document.getElementById("fg");
 const fgpsEl = document.getElementById("fgps");
 const multiEl = document.getElementById("multi");
 
-// ===== UPDATE UI =====
-function updateUI() {
-  fgEl.textContent = formatNumber(fg);
-  fgpsEl.textContent = formatNumber(fgps);
-  multiEl.textContent = formatNumber(multiplier);
-  save();
-}
+// ==== SAVE SYSTEM ====
+function save(){ localStorage.setItem("fgGame", JSON.stringify({fg, fgps, multiplier})); }
+function load(){ const data=JSON.parse(localStorage.getItem("fgGame")); if(data){ fg=data.fg; fgps=data.fgps; multiplier=data.multiplier; } }
+load();
 
-// ===== CLICK FUNCTION =====
+// ==== UI UPDATE ====
+function updateUI(){ fgEl.textContent=formatNumber(fg); fgpsEl.textContent=formatNumber(fgps); multiEl.textContent=formatNumber(multiplier); save(); }
 function clickFG(){ fg+=multiplier; updateUI(); }
 
-// ===== AUTO CLICKERS =====
-const autos = [
-  ["Mera",1,25], ["Tom",3,100], ["F5",8,300], ["PRX",18,750],
-  ["India All Stars",35,1500], ["stxcked",70,3000], ["Shin",140,6000],
-  ["Prime Mera",500,25000], ["God Tier Mera",5000,250000], ["Legendary Mera",50000,2500000],
-  ["Trillion Mera",1e12,1e11]
-];
-const autoShop = document.getElementById("autoShop");
+// ==== SHOPS ====
+const autos=[["Mera",1,25],["Tom",3,100],["F5",8,300],["PRX",18,750]];
+const autoShop=document.getElementById("autoShop");
 autos.forEach(a=>{
-  const div=document.createElement("div");
-  div.className="item";
+  const div=document.createElement("div"); div.className="item";
   div.innerHTML=`<b>${a[0]}</b><br>+${formatNumber(a[1])} FG/sec<br>Cost: ${formatNumber(a[2])}<button>Buy</button>`;
   const btn=div.querySelector("button");
   btn.onclick=()=>{ if(fg>=a[2]){ fg-=a[2]; fgps+=a[1]; updateUI(); } };
   autoShop.appendChild(div);
 });
-
-// ===== MULTIPLIERS =====
-const mults = [
-  ["4 inb",2,5000], ["3 walls",3,12000], ["illegal style",5,30000], ["banned move",8,70000],
-  ["fg for fun",12,150000], ["Cheating",20,400000], ["hacks",35,900000], ["Prime FG",100,5000000],
-  ["Mega FG",1000,5e7], ["Ultra FG",10000,5e8], ["Trillion Clicks",1e12,5e12]
-];
-const multiShop = document.getElementById("multiShop");
+const mults=[["4 inb",2,5000],["3 walls",3,12000]];
+const multiShop=document.getElementById("multiShop");
 mults.forEach(m=>{
-  const div=document.createElement("div");
-  div.className="item";
+  const div=document.createElement("div"); div.className="item";
   div.innerHTML=`<b>${m[0]}</b><br>x${formatNumber(m[1])} clicks<br>Cost: ${formatNumber(m[2])}<button>Buy</button>`;
   const btn=div.querySelector("button");
   btn.onclick=()=>{ if(fg>=m[2]){ fg-=m[2]; multiplier=m[1]; updateUI(); } };
   multiShop.appendChild(div);
 });
 
-// ===== AUTO LOOP =====
 setInterval(()=>{ fg+=fgps*multiplier; updateUI(); },1000);
+function formatNumber(num){ if(num>=1e12) return (num/1e12).toFixed(2)+"T"; if(num>=1e9) return (num/1e9).toFixed(2)+"B"; if(num>=1e6) return (num/1e6).toFixed(2)+"M"; if(num>=1e3) return (num/1e3).toFixed(1)+"K"; return Math.floor(num); }
 
-// ===== NUMBER FORMATTER =====
-function formatNumber(num){
-  if(num>=1e12) return (num/1e12).toFixed(2)+"T";
-  if(num>=1e9) return (num/1e9).toFixed(2)+"B";
-  if(num>=1e6) return (num/1e6).toFixed(2)+"M";
-  if(num>=1e3) return (num/1e3).toFixed(1)+"K";
-  return Math.floor(num);
-}
-
-// ===== MODAL FUNCTIONS =====
+// ==== MODAL ====
 const modal=document.getElementById("modal");
-function openModal(title,body){
-  modal.style.display="flex";
-  document.getElementById("modalTitle").textContent=title;
-  document.getElementById("modalBody").innerHTML=body;
-}
+function openModal(title,body){ modal.style.display="flex"; document.getElementById("modalTitle").textContent=title; document.getElementById("modalBody").innerHTML=body; }
 function closeModal(){ modal.style.display="none"; }
 
-// ===== LEADERBOARD =====
-function openLeaderboard(){
-  let lb = JSON.parse(localStorage.getItem("fgLeaderboard")) || [];
-  lb.push({name:"You",fg:fg});
-  lb.sort((a,b)=>b.fg-a.fg);
-  if(lb.length>5) lb=lb.slice(0,5);
-  localStorage.setItem("fgLeaderboard", JSON.stringify(lb));
-  let html="<ol>";
-  lb.forEach(e=> html+=`<li>${e.name}: ${formatNumber(e.fg)} FG</li>`);
-  html+="</ol><p>Top 5 reward: 100 Robux!</p>";
-  openModal("Leaderboard 🏆",html);
-}
+// ==== LEADERBOARD ====
+function openLeaderboard(){ let lb=JSON.parse(localStorage.getItem("fgLeaderboard"))||[]; lb.push({name:"You",fg:fg}); lb.sort((a,b)=>b.fg-a.fg); if(lb.length>5) lb=lb.slice(0,5); localStorage.setItem("fgLeaderboard",JSON.stringify(lb)); let html="<ol>"; lb.forEach(e=> html+=`<li>${e.name}: ${formatNumber(e.fg)} FG</li>`); html+="</ol><p>Top 5 reward: 100 Robux!</p>"; openModal("Leaderboard 🏆",html); }
 
-// ===== GAMES MENU =====
-const gamesList = [
-  "Coin Flip",
-  "Aim Trainer",
-  "Reaction Test",
-  "Number Guess",
-  "Memory Grid",
-  "Rapid Click Burst",
-  "Precision Hold",
-  "Risk Button",
-  "Time Stop",
-  "Pattern Recall"
-];
+// ==== GAMES MENU ====
+const gamesList=["Coin Flip","Aim Trainer","Rapid Click Burst","Precision Hold"];
+function openGames(){ let html="<ul>"; gamesList.forEach((g,i)=> html+=`<li><button class="game-btn" onclick="startGame(${i})">${g}</button></li>`); html+="</ul>"; openModal("Games Menu 🎮",html); }
+function startGame(i){ switch(i){ case 0: coinFlip(); break; case 1: aimTrainer(); break; case 2: rapidClickBurst(); break; case 3: precisionHold(); break; } }
 
-function openGames(){
-  let html="<ul>";
-  gamesList.forEach((g,i)=> html+=`<li><button class="game-btn" onclick="startGame(${i})">${g}</button></li>`);
-  html+="</ul>";
-  openModal("Games Menu 🎮",html);
-}
-
-// ===== GAME LOGIC =====
-function startGame(i){
-  switch(i){
-    case 0: coinFlipGame(); break;
-    case 1: aimTrainerGame(); break;
-    case 2: reactionTestGame(); break;
-    case 3: numberGuessGame(); break;
-    case 4: memoryGridGame(); break;
-    case 5: rapidClickBurstGame(); break;
-    case 6: precisionHoldGame(); break;
-    case 7: riskButtonGame(); break;
-    case 8: timeStopGame(); break;
-    case 9: patternRecallGame(); break;
-  }
-}
-
-// ===== SIMPLE FUNCTIONAL GAMES =====
-function coinFlipGame(){
-  let html=`<p>Click to flip a coin:</p><button class="game-btn" id="flipBtn">Flip</button><div id="coinResult"></div>`;
+// ==== MINI-GAMES ====
+function coinFlip(){
+  let html=`<p>Pick Heads or Tails</p>
+  <button class="game-btn" onclick="flipResult('heads')">Heads</button>
+  <button class="game-btn" onclick="flipResult('tails')">Tails</button>
+  <div id="coinAnim" style="margin-top:10px;font-size:18px;"></div>`;
   openModal("Coin Flip",html);
-  document.getElementById("flipBtn").onclick=()=>{
-    const win = Math.random()<0.5;
-    if(win){ fg*=2; document.getElementById("coinResult").textContent="You won! FG doubled!"; }
-    else{ fg=Math.floor(fg/2); document.getElementById("coinResult").textContent="You lost! FG halved!"; }
-    updateUI();
-  };
+}
+function flipResult(choice){
+  const result=Math.random()<0.5?'heads':'tails';
+  document.getElementById("coinAnim").textContent=`Coin landed on ${result}!`;
+  setTimeout(()=>{ if(choice===result){ fg*=2; alert("You won! FG doubled!"); } else { fg=Math.floor(fg/2); alert("You lost! FG halved!"); } updateUI(); closeModal(); },800);
 }
 
-function aimTrainerGame(){
-  const html=`<p>Click the moving red square as fast as you can!</p><canvas id="gameCanvas" width="400" height="200"></canvas>`;
+function aimTrainer(){
+  let html=`<p>Click the red dot as many times as you can in 15s!</p>
+  <div id="trainerBox" style="position:relative;width:400px;height:300px;background:#333;margin:10px auto;"></div>
+  <div>Hits: <span id="hitCount">0</span></div>`;
   openModal("Aim Trainer",html);
-  const canvas = document.getElementById("gameCanvas");
-  const ctx = canvas.getContext("2d");
-  let x=0, y=50;
-  let speed=3;
-  function draw(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    ctx.fillStyle="red";
-    ctx.fillRect(x,y,50,50);
-    x+=speed;
-    if(x+50>canvas.width || x<0) speed*=-1;
-    requestAnimationFrame(draw);
+  const box=document.getElementById("trainerBox"); let hits=0;
+  function spawnDot(){
+    const dot=document.createElement("div");
+    dot.style.width='20px'; dot.style.height='20px'; dot.style.background='red'; dot.style.borderRadius='50%';
+    dot.style.position='absolute';
+    dot.style.left=Math.random()*(380)+'px';
+    dot.style.top=Math.random()*(280)+'px';
+    dot.style.cursor='pointer';
+    dot.onclick=()=>{
+      hits++; document.getElementById("hitCount").textContent=hits;
+      fg+=Math.ceil(multiplier*0.01); updateUI();
+      dot.remove(); spawnDot();
+    };
+    box.appendChild(dot);
   }
-  draw();
-  canvas.onclick=()=>{
-    fg*=2;
-    updateUI();
-    alert("Hit! FG doubled!");
-    closeModal();
-  };
+  spawnDot();
+  const timer=setTimeout(()=>{ alert(`Time's up! Hits: ${hits}`); closeModal(); },15000);
 }
 
-function reactionTestGame(){
-  let html=`<p>Wait for the box to turn green, then click it!</p><div id="reactionBox" style="width:100px;height:100px;background:red;margin:20px auto;cursor:pointer;"></div>`;
-  openModal("Reaction Test",html);
-  const box = document.getElementById("reactionBox");
-  setTimeout(()=>{ box.style.background="green"; box.onclick=()=>{ fg*=2; updateUI(); alert("Success! FG doubled!"); closeModal(); }; },1000+Math.random()*3000);
+function rapidClickBurst(){
+  let html=`<p>Click the button as many times as you can in 5s!</p>
+  <button id="rcbBtn" class="game-btn">CLICK</button>
+  <div>Clicks: <span id="rcbCount">0</span></div>`;
+  openModal("Rapid Click Burst",html);
+  let clicks=0; const btn=document.getElementById("rcbBtn");
+  btn.onclick=()=>{ clicks++; document.getElementById("rcbCount").textContent=clicks; };
+  setTimeout(()=>{ fg+=Math.floor(multiplier*0.01*clicks); alert(`You clicked ${clicks} times! Reward added.`); updateUI(); closeModal(); },5000);
 }
 
-function numberGuessGame(){
-  let num=Math.floor(Math.random()*5)+1;
-  let html=`<p>Guess a number from 1 to 5:</p>`;
-  for(let i=1;i<=5;i++){
-    html+=`<button class="game-btn" onclick="numberGuessClick(${i},${num})">${i}</button>`;
-  }
-  openModal("Number Guess",html);
-}
-function numberGuessClick(guess,num){
-  if(guess===num){ fg*=2; alert("Correct! FG doubled!"); }
-  else{ fg=Math.floor(fg/2); alert("Wrong! FG halved!"); }
-  updateUI(); closeModal();
+function precisionHold(){
+  let html=`<p>Hold the button for 3 seconds!</p>
+  <button id="holdBtn" class="game-btn">HOLD</button>
+  <div id="holdStatus"></div>`;
+  openModal("Precision Hold",html);
+  const btn=document.getElementById("holdBtn"); const status=document.getElementById("holdStatus"); let held=false;
+  btn.onmousedown=()=>{ held=true; status.textContent="Holding..."; setTimeout(()=>{ if(held){ fg+=Math.ceil(multiplier*0.05); updateUI(); alert("Success! Reward added."); closeModal(); } },3000); };
+  btn.onmouseup=()=>{ held=false; status.textContent="Released too early!"; };
 }
 
-function memoryGridGame(){
-  const sequence=[];
-  const size=3;
-  let html=`<p>Memorize the sequence!</p><div id="memoryGrid"></div>`;
-  openModal("Memory Grid",html);
-  const grid = document.getElementById("memoryGrid");
-  for(let i=0;i<size*size;i++){
-    const btn=document.createElement("button");
-    btn.disabled=true;
-    grid.appendChild(btn);
-  }
-  // generate sequence
-  for(let i=0;i<3;i++) sequence.push(Math.floor(Math.random()*9));
-  let idx=0;
-  function showSequence(){
-    const buttons=grid.querySelectorAll("button");
-    buttons.forEach(b=>b.style.background="");
-    if(idx<sequence.length){
-      buttons[sequence[idx]].style.background="yellow";
-      idx++;
-      setTimeout(showSequence,500);
-    } else {
-      buttons.forEach(b=>b.disabled=false);
-      let userIdx=0;
-      buttons.forEach((b,i)=>{
-        b.onclick=()=>{
-          if(i!==sequence[userIdx]){ alert("Wrong! FG halved!"); fg=Math.floor(fg/2); updateUI(); closeModal(); return; }
-          userIdx++;
-          b.style.background="green";
-          if(userIdx===sequence.length){ alert("Correct! FG doubled!"); fg*=2; updateUI(); closeModal(); }
-        };
-      });
-    }
-  }
-  showSequence();
-}
-
-// PLACEHOLDER GAMES (you can implement similar logic)
-function rapidClickBurstGame(){ fg*=2; alert("Rapid Click Burst! FG doubled!"); updateUI(); closeModal(); }
-function precisionHoldGame(){ fg*=2; alert("Precision Hold! FG doubled!"); updateUI(); closeModal(); }
-function riskButtonGame(){ fg*=2; alert("Risk Button! FG doubled!"); updateUI(); closeModal(); }
-function timeStopGame(){ fg*=2; alert("Time Stop! FG doubled!"); updateUI(); closeModal(); }
-function patternRecallGame(){ fg*=2; alert("Pattern Recall! FG doubled!"); updateUI(); closeModal(); }
-
-// ===== GAMBLE =====
 function openGamble(){
-  let amt=prompt("Enter amount of FG to gamble:");
-  amt=parseInt(amt);
-  if(isNaN(amt)||amt<=0){ alert("Invalid amount"); return; }
-  if(amt>fg){ alert("Not enough FG"); return; }
-  if(Math.random()<0.5){ fg+=amt; alert(`You won ${formatNumber(amt)} FG!`); }
-  else{ fg-=amt; alert(`You lost ${formatNumber(amt)} FG!`); }
-  updateUI();
+  let amt=prompt("Enter FG to gamble:"); amt=parseInt(amt);
+  if(isNaN(amt)||amt<=0){ alert("Invalid"); return; } if(amt>fg){ alert("Not enough FG"); return; }
+  if(Math.random()<0.5){ fg+=amt; alert(`You won ${formatNumber(amt)} FG!`); } else { fg-=amt; alert(`You lost ${formatNumber(amt)} FG!`); } updateUI();
 }
 
 updateUI();
