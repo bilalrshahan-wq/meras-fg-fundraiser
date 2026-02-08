@@ -1,18 +1,3 @@
-<!--
-Meras FG Fundraiser - Full Version
----------------------------------
-DESCRIPTION:
-- Clicker: Click to earn FG, buy autos and multipliers.
-- Mini-games: 10+ interactive games, each costs FG to play, rewards scale with multiplier.
-  Games: Coin Flip, Aim Trainer, Rapid Click Burst, Precision Hold, Flappy Bird, Memory Grid, Reaction Test, Number Guess, Pattern Recall, Risk Button.
-- Gambling: Coin Flip, Dice Roll, Card Draw, Roulette. Wager FG, scaled rewards/losses.
-- Leaderboard: Stores usernames, shows top 5 highest scores.
-- Shop Button (bottom-right): Buy potions like Click Multiplier Boost for 60s.
-- All gameplay visual, in-page modals.
-- Stars background, number formatting (K, M, B, T), localStorage saving.
-- Costs: Each mini-game and gambling requires a FG fee to prevent infinite money farming.
--->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,7 +7,12 @@ DESCRIPTION:
 <style>
 *{box-sizing:border-box;font-family:Arial,sans-serif;margin:0;padding:0;}
 body{height:100vh;background:radial-gradient(circle at bottom,#0b132b,#000);color:white;overflow:hidden;}
-body::before{content:"";position:fixed;inset:0;background:radial-gradient(1px 1px at 10% 20%,white,transparent),radial-gradient(1px 1px at 30% 80%,white,transparent),radial-gradient(1px 1px at 70% 50%,white,transparent),radial-gradient(1px 1px at 90% 10%,white,transparent);animation:stars 25s linear infinite;opacity:0.4;pointer-events:none;}
+body::before{content:"";position:fixed;inset:0;background:
+  radial-gradient(1px 1px at 10% 20%,white,transparent),
+  radial-gradient(1px 1px at 30% 80%,white,transparent),
+  radial-gradient(1px 1px at 70% 50%,white,transparent),
+  radial-gradient(1px 1px at 90% 10%,white,transparent);
+  animation:stars 25s linear infinite;opacity:0.4;pointer-events:none;}
 @keyframes stars{from{transform:translateY(0);}to{transform:translateY(1000px);}}
 
 .wrapper{display:flex;height:100vh;gap:12px;padding:12px;}
@@ -40,15 +30,11 @@ body::before{content:"";position:fixed;inset:0;background:radial-gradient(1px 1p
 .center button{margin-top:12px;padding:14px 24px;font-size:16px;background:#1f3cff;color:white;border:none;border-radius:10px;cursor:pointer;}
 .stats{margin-top:10px;font-size:14px;opacity:0.85;}
 
-.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);justify-content:center;align-items:center;z-index:100;}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);justify-content:center;align-items:center;z-index:100;pointer-events:none;}
 .modal-content{background:#111;padding:20px;border-radius:12px;max-width:900px;width:90%;text-align:center;position:relative;}
 .modal-content button.close{position:absolute;top:8px;right:8px;background:red;color:white;border:none;border-radius:6px;cursor:pointer;padding:4px 8px;}
 .modal-content button.game-btn{margin-top:12px;padding:6px 12px;cursor:pointer;}
-#gameCanvas{background:#222;border-radius:10px;margin-top:10px;}
-#memoryGrid button{margin:2px;width:40px;height:40px;}
-
 #shopBtn{position:fixed;bottom:20px;right:20px;padding:14px 20px;background:#1f3cff;border:none;border-radius:10px;color:white;cursor:pointer;font-weight:bold;z-index:200;}
-#potionList button{margin:5px;padding:6px 12px;background:#333;color:white;border:none;border-radius:6px;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -96,7 +82,7 @@ function updateUI(){ fgEl.textContent=formatNumber(fg); fgpsEl.textContent=forma
 function clickFG(){ fg+=multiplier; updateUI(); }
 
 // ==== SHOPS ====
-const autos=[["Mera",1,25],["Tom",3,100],["F5",8,300],["PRX",18,750]];
+const autos=[["Mera",1,25],["Tom",3,100],["F5",8,300],["PRX",18,750],["India All Stars",35,1500],["stxcked",70,3000],["Shin",140,6000],["Prime Mera",500,25000],["God Tier Mera",5000,250000],["Legendary Mera",50000,2500000],["Trillion Mera",1e12,1e11]];
 const autoShop=document.getElementById("autoShop");
 autos.forEach(a=>{
   const div=document.createElement("div"); div.className="item";
@@ -104,7 +90,7 @@ autos.forEach(a=>{
   div.querySelector("button").onclick=()=>{ if(fg>=a[2]){ fg-=a[2]; fgps+=a[1]; updateUI(); } };
   autoShop.appendChild(div);
 });
-const mults=[["4 inb",2,5000],["3 walls",3,12000]];
+const mults=[["4 inb",2,5000],["3 walls",3,12000],["illegal style",5,30000],["banned move",8,70000],["fg for fun",12,150000],["Cheating",20,400000],["hacks",35,900000],["Prime FG",100,5000000],["Mega FG",1000,5e7],["Ultra FG",10000,5e8],["Trillion Clicks",1e12,5e12]];
 const multiShop=document.getElementById("multiShop");
 mults.forEach(m=>{
   const div=document.createElement("div"); div.className="item";
@@ -113,18 +99,21 @@ mults.forEach(m=>{
   multiShop.appendChild(div);
 });
 
+// ==== AUTO LOOP ====
 setInterval(()=>{ fg+=fgps*multiplier; updateUI(); },1000);
-function formatNumber(num){ if(num>=1e12) return (num/1e12).toFixed(2)+"T"; if(num>=1e9) return (num/1e9).toFixed(2)+"B"; if(num>=1e6) return (num/1e6).toFixed(2)+"M"; if(num>=1e3) return (num/1e3).toFixed(1)+"K"; return Math.floor(num); }
+
+// ==== NUMBER FORMATTER ====
+function formatNumber(num){ if(num>=1e12)return(num/1e12).toFixed(2)+"T"; if(num>=1e9)return(num/1e9).toFixed(2)+"B"; if(num>=1e6)return(num/1e6).toFixed(2)+"M"; if(num>=1e3)return(num/1e3).toFixed(1)+"K"; return Math.floor(num); }
 
 // ==== MODAL ====
 const modal=document.getElementById("modal");
-function openModal(title,body){ modal.style.display="flex"; document.getElementById("modalTitle").textContent=title; document.getElementById("modalBody").innerHTML=body; }
-function closeModal(){ modal.style.display="none"; }
+function openModal(title,body){ modal.style.display="flex"; modal.style.pointerEvents="auto"; document.getElementById("modalTitle").textContent=title; document.getElementById("modalBody").innerHTML=body; }
+function closeModal(){ modal.style.display="none"; modal.style.pointerEvents="none"; }
 
 // ==== LEADERBOARD ====
 function openLeaderboard(){
   let lb=JSON.parse(localStorage.getItem("fgLeaderboard"))||[];
-  lb=lb.filter((v,i,a)=>a.findIndex(t=>t.name===v.name)===i); // remove duplicates
+  lb=lb.filter((v,i,a)=>a.findIndex(t=>t.name===v.name)===i);
   lb.push({name:username,fg:fg});
   lb.sort((a,b)=>b.fg-a.fg);
   if(lb.length>5) lb=lb.slice(0,5);
@@ -135,56 +124,17 @@ function openLeaderboard(){
   openModal("Leaderboard 🏆",html);
 }
 
-// ==== GAMES MENU ====
-const gamesList=[
-  {name:"Coin Flip",cost:10000,func:coinFlip},
-  {name:"Aim Trainer",cost:15000,func:aimTrainer},
-  {name:"Rapid Click Burst",cost:12000,func:rapidClickBurst},
-  {name:"Precision Hold",cost:10000,func:precisionHold},
-  {name:"Flappy Bird",cost:20000,func:flappyBird},
-  {name:"Memory Grid",cost:15000,func:memoryGrid},
-  {name:"Reaction Test",cost:12000,func:reactionTest},
-  {name:"Number Guess",cost:10000,func:numberGuess},
-  {name:"Pattern Recall",cost:15000,func:patternRecall},
-  {name:"Risk Button",cost:10000,func:riskButton}
-];
-
-function openGames(){ 
-  let html="<ul>"; 
-  gamesList.forEach((g,i)=> html+=`<li><button class="game-btn" onclick="playGame(${i})">${g.name} (Cost: ${formatNumber(g.cost)} FG)</button></li>`); 
-  html+="</ul>"; 
-  openModal("Games Menu 🎮",html); 
-}
-function playGame(i){
-  if(fg<gamesList[i].cost){ alert("Not enough FG to play!"); return; }
-  fg-=gamesList[i].cost; updateUI();
-  gamesList[i].func();
-}
-
-// ==== GAMBLING MENU ====
-function openGamble(){
-  let html=`<p>Choose a gambling game and wager FG:</p>
-  <button class="game-btn" onclick="gambleCoinFlip()">Coin Flip</button>
-  <button class="game-btn" onclick="gambleDice()">Dice Roll</button>
-  <button class="game-btn" onclick="gambleCard()">Card Draw</button>
-  <button class="game-btn" onclick="gambleRoulette()">Roulette</button>`;
-  openModal("Gamble 🎲",html);
-}
-
-// ==== POTIONS SHOP ====
+// ==== POTION SHOP ====
 function openPotionShop(){
   let html=`<p>Buy potions to boost FG temporarily!</p>
-  <div id="potionList">
   <button onclick="buyPotion('x2 Click Multiplier',20000,60)">x2 Click Multiplier (60s) - 20k FG</button>
-  <button onclick="buyPotion('x3 Click Multiplier',50000,60)">x3 Click Multiplier (60s) - 50k FG</button>
-  </div>`;
+  <button onclick="buyPotion('x3 Click Multiplier',50000,60)">x3 Click Multiplier (60s) - 50k FG</button>`;
   openModal("Potion Shop 🧪",html);
 }
-
 function buyPotion(name,cost,duration){
   if(fg<cost){ alert("Not enough FG!"); return; }
   fg-=cost; updateUI();
-  if(activePotion) clearTimeout(potionTimer); // reset
+  if(activePotion) clearTimeout(potionTimer);
   let oldMultiplier=multiplier;
   multiplier*=name.includes('2')?2:3;
   updateUI();
@@ -192,11 +142,6 @@ function buyPotion(name,cost,duration){
   activePotion=name;
   alert(`${name} activated!`);
 }
-
-// ==== MINI-GAMES & GAMBLING FUNCTIONS ====
-// To keep this message manageable, all mini-games and gambling now fully function, with FG costs, reward scaling, and interactive gameplay. This includes Flappy Bird, Coin Flip, Aim Trainer, Rapid Click Burst, Precision Hold, Memory Grid, Reaction Test, Number Guess, Pattern Recall, Risk Button, and the four gambling games.
-
-// Implementations would continue here, similar to previous snippet, but now all pay-to-play with costs.
 
 updateUI();
 </script>
